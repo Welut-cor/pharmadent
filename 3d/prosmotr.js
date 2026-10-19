@@ -10,6 +10,8 @@ const OBOLOCHKA = /^(guba_|shcheka_)/;
 const SKVOZ = 0.22; // непрозрачность оболочки в режиме «прозрачно»
 const PODSVETKA = new THREE.Color(0xffb347);
 const VPERED = new THREE.Vector3(0, 0.25, 1);
+// Зубы мудрости и их десна достроены (у основы их нет): видны, только если зуб назвал случай.
+const MUDROST = /^(zub|desna)_(\d8)$/;
 
 const NAZVANIYA = {
   desna_verh: 'Десна верхняя', desna_niz: 'Десна нижняя', yazyk: 'Язык', nebo: 'Нёбо',
@@ -23,14 +25,32 @@ const NAZVANIYA = {
 
 export function nazvanie(imya) {
   if (/^zub_\d\d$/.test(imya)) return 'Зуб ' + imya.slice(4);
+  if (/^desna_\d8$/.test(imya)) return 'Десна вокруг зуба ' + imya.slice(6);
   if (imya.startsWith('porazh_')) return 'Поражение';
   return NAZVANIYA[imya] || imya;
 }
 
-// Что показывать в случае: части с поражением и префикс накладок (по «Данным осмотра»).
+// Что показывать в случае (по «Данным осмотра»): obekty — подсвеченные части, porazh — префикс накладок,
+// skryt — спрятать части (удалённый зуб), formy — включить формы (отёк щеки: otyok_prav_niz).
 export const SLUCHAI = {
   2: { obekty: ['guba_niz_vnutr', 'shcheka_lev'], porazh: 'porazh_02' },
 };
+
+/** Средняя нормаль поверхностей объектов в мировых координатах (куда «смотрит» поражение). */
+function sredNormal(obekty) {
+  const n = new THREE.Vector3();
+  const v = new THREE.Vector3();
+  const m3 = new THREE.Matrix3();
+  for (const o of obekty) {
+    o.traverse((m) => {
+      const a = m.isMesh && m.geometry.attributes.normal;
+      if (!a) return;
+      m3.getNormalMatrix(m.matrixWorld);
+      for (let i = 0; i < a.count; i++) n.add(v.fromBufferAttribute(a, i).applyMatrix3(m3).normalize());
+    });
+  }
+  return n.lengthSq() ? n.normalize() : n;
+}
 
 function vidimyy(o) {
   for (; o; o = o.parent) if (!o.visible) return false;
@@ -68,6 +88,7 @@ export class Prosmotr {
     Object.assign(this.upr, { minPolarAngle: grad(45), maxPolarAngle: grad(125), minAzimuthAngle: grad(-100), maxAzimuthAngle: grad(100) });
 
     this.rezhimTek = 'obychno';
+    this.formy = [];
     this.zona = [];
     this.porazheniya = [];
     this.misheni = new THREE.Group();
@@ -103,11 +124,12 @@ export class Prosmotr {
         glubina.visible = false;
         glubina.raycast = () => {};
         glubina.userData.sluzhebnyy = true;
+        if (m.morphTargetInfluences) glubina.morphTargetInfluences = m.morphTargetInfluences; // отёк — и в проходе глубины
         m.add(glubina);
         m.userData.glubina = glubina;
       }
     }
-    for (const [imya, o] of this.chasti) if (imya.startsWith('porazh_')) o.visible = false;
+    for (const [imya, o] of this.chasti) if (imya.startsWith('porazh_') || MUDROST.test(imya)) o.visible = false;
     this.scena.add(this.model);
     const sfera = new THREE.Box3().setFromObject(this.model).getBoundingSphere(new THREE.Sphere());
     this.centr = sfera.center;
@@ -126,26 +148,52 @@ export class Prosmotr {
     return out;
   }
 
-  /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh и навести камеру. */
-  pokazat({ obekty = [], porazh = '' } = {}) {
+  /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh, спрятать части skryt,
+   *  включить формы formy и навести камеру. */
+  pokazat({ obekty = [], porazh = '', skryt = [], formy = [] } = {}) {
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
     // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
     this.zona = obekty.flatMap((imya) => this.setki(imya)).filter((m) => !/^(kozha|srez)/.test(m.material.name));
     this.porazheniya = [];
     for (const [imya, o] of this.chasti) {
-      if (!imya.startsWith('porazh_')) continue;
-      o.visible = porazh !== '' && imya.startsWith(porazh + '_');
-      if (o.visible) this.porazheniya.push(o);
+      if (imya.startsWith('porazh_')) {
+        o.visible = porazh !== '' && imya.startsWith(porazh + '_');
+        if (o.visible) this.porazheniya.push(o);
+        continue;
+      }
+      const m = MUDROST.exec(imya);
+      o.visible = !skryt.includes(imya) && (!m || obekty.includes('zub_' + m[2]) || obekty.includes(imya));
     }
+    this.formy = formy;
+    this.model.traverse((m) => {
+      if (!m.morphTargetDictionary || m.userData.sluzhebnyy) return;
+      m.morphTargetInfluences.fill(0);
+      for (const f of formy) if (f in m.morphTargetDictionary) m.morphTargetInfluences[m.morphTargetDictionary[f]] = 1;
+    });
     this.misheni.clear();
-    for (const o of this.porazheniya) {
-      const s = new THREE.Box3().setFromObject(o).getBoundingSphere(new THREE.Sphere());
+    const radius = (s) => Math.min(s.radius * 1.7, s.radius + 0.004); // у крупных (лунка) кольцо не на пол-экрана
+    const sfery = this.porazheniya.map((o) => new THREE.Box3().setFromObject(o).getBoundingSphere(new THREE.Sphere()));
+    // кольца, которые налезали бы друг на друга (пятна на соседних зубах), — одно общее
+    const obshchie = new Set();
+    for (let i = 0; i < sfery.length; i++) {
+      for (let j = i + 1; j < sfery.length; j++) {
+        if (sfery[i].center.distanceTo(sfery[j].center) < 1.25 * (radius(sfery[i]) + radius(sfery[j]))) {
+          sfery[i].union(sfery[j]);
+          sfery.splice(j, 1);
+          obshchie.add(sfery[i]);
+          i = -1;
+          break;
+        }
+      }
+    }
+    for (const s of sfery) {
+      const r = obshchie.has(s) ? s.radius * 1.08 : radius(s); // общее — вплотную вокруг группы
       const m = new THREE.Mesh(
-        new THREE.RingGeometry(1, 1.22, 48),
+        new THREE.RingGeometry(1, 1 + Math.min(0.22, 0.0011 / r), 64), // толщина ~1 мм и у большого кольца
         new THREE.MeshBasicMaterial({ color: 0x0fa596, transparent: true, depthTest: false, side: THREE.DoubleSide }),
       );
       m.position.copy(s.center);
-      m.userData.r = s.radius * 1.7;
+      m.userData.r = r;
       m.renderOrder = 10;
       this.misheni.add(m);
     }
@@ -187,20 +235,26 @@ export class Prosmotr {
     this.polet = { ot: this.kamera.position.clone(), do: kuda, cel0: this.upr.target.clone(), cel };
   }
 
-  /** Камера к поражению (или к подсвеченным частям). */
+  /** Камера к поражению (или к подсвеченным частям; при отёке — всё лицо). */
   kZone() {
     const ob = this.porazheniya.length ? this.porazheniya : this.zona;
     if (!ob.length) return this.obzor();
     const box = new THREE.Box3();
     ob.forEach((o) => box.expandByObject(o));
     const s = box.getBoundingSphere(new THREE.Sphere());
-    const nap = s.center.clone().sub(this.centr).normalize().add(VPERED).normalize();
+    // отёк виден по силуэту щеки: всё лицо спереди, чуть со здоровой стороны — отёчная щека видна контуром
+    if (this.formy.length) return this.obzor(true, -0.2 * Math.sign(s.center.x - this.centr.x));
+    const nap = s.center.clone().sub(this.centr).normalize().add(VPERED);
+    // поражение, обращённое к зрителю или вверх (жевательная поверхность, лунка), — смотреть ему «в лицо»
+    const n = sredNormal(this.porazheniya);
+    if (n.dot(VPERED) > 0.2) nap.addScaledVector(n, 1.5);
+    nap.normalize();
     const d = THREE.MathUtils.clamp(this.dalnost(Math.max(s.radius, 0.012) * 2.3), 0.11, 0.3);
     this.letet(s.center.clone().addScaledVector(nap, d), s.center.clone());
   }
 
-  /** Вся модель спереди. */
-  obzor(plavno = true) {
+  /** Вся модель спереди; povorot — доворот вбок (x направления взгляда: + к левой стороне пациента). */
+  obzor(plavno = true, povorot = 0) {
     // вписать по ширине и высоте рамки модели: сфера вокруг глубокой модели (от губ до глотки) даёт слишком мелкий вид
     const box = new THREE.Box3().setFromObject(this.model);
     const raz = box.getSize(new THREE.Vector3());
@@ -208,7 +262,7 @@ export class Prosmotr {
     const g = Math.atan(Math.tan(v) * this.kamera.aspect);
     const d = Math.max(raz.y / 2 / Math.tan(v), raz.x / 2 / Math.tan(g)) * 1.12 + raz.z / 2;
     const c = box.getCenter(new THREE.Vector3());
-    const nap = new THREE.Vector3(0, 0.1, 1).normalize();
+    const nap = new THREE.Vector3(povorot, 0.1, 1).normalize();
     this.letet(c.clone().addScaledVector(nap, d), c, plavno);
   }
 
