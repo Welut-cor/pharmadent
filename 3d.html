@@ -36,14 +36,14 @@ button{font:inherit;color:inherit;background:transparent;border:0;padding:8px 12
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .knopka{border:1px solid var(--line);border-radius:10px}
-button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.glubina{display:flex;align-items:center;gap:8px;flex:1 1 200px;color:var(--muted);font-size:14px}
-.glubina input{flex:1;accent-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .podpis{margin:10px 0 0;color:var(--muted);font-size:14px;min-height:1.5em}
 .podpis code{font-family:var(--f-mono);font-size:12px}
 dl{margin:0;display:grid;gap:8px}
 dt{font-size:13px;color:var(--muted)}
 dd{margin:0}
+.avtory{margin:4px 4px 0;color:var(--muted);font-size:12px;line-height:1.5}
+.avtory a{color:inherit}
 </style>
 </head>
 <body>
@@ -56,11 +56,9 @@ dd{margin:0}
       <div class="seg" role="group" aria-label="Режим показа">
         <button data-rezhim="prozrachno" aria-pressed="true">Прозрачно</button>
         <button data-rezhim="obychno" aria-pressed="false">Обычно</button>
-        <button data-rezhim="srez" aria-pressed="false">Срез</button>
       </div>
       <button class="knopka" id="k-zone">К поражению</button>
       <button class="knopka" id="obzor">Весь рот</button>
-      <label class="glubina" id="glubina" hidden>Глубина <input type="range" min="0" max="1" step="0.01" value="0.25"></label>
     </div>
     <p class="podpis" id="podpis">Нажми на любую часть — покажу, что это.</p>
   </section>
@@ -71,6 +69,9 @@ dd{margin:0}
       <div><dt>Как выглядит</dt><dd>две круглые язвочки с бело-жёлтым дном и красным ободком</dd></div>
     </dl>
   </section>
+
+  <p class="avtory">3D-модель основана на «<a href="https://sketchfab.com/3d-models/human-mouth-detailed-522eda0ec0e3413a914b1b298a791320">Human mouth detailed</a>», автор Mince,
+    лицензия <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Изменено: модель разделена на части, перекрашены зубы, добавлены губы, щёки и поражения.</p>
 </main>
 
 <script type="importmap">
@@ -81,7 +82,6 @@ import { Prosmotr, SLUCHAI, nazvanie } from './3d/prosmotr.js';
 
 const el = document.getElementById('model');
 const podpis = document.getElementById('podpis');
-const glubina = document.getElementById('glubina');
 
 try {
   const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
@@ -96,10 +96,8 @@ try {
     b.addEventListener('click', () => {
       document.querySelectorAll('[data-rezhim]').forEach((x) => x.setAttribute('aria-pressed', x === b));
       p.rezhim(b.dataset.rezhim);
-      glubina.hidden = b.dataset.rezhim !== 'srez';
     });
   }
-  glubina.querySelector('input').addEventListener('input', (e) => { p.glubina = +e.target.value; });
   document.getElementById('k-zone').addEventListener('click', () => p.kZone());
   document.getElementById('obzor').addEventListener('click', () => p.obzor());
   window.prosmotr = p; // для проверки из консоли

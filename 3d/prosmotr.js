@@ -1,5 +1,5 @@
 // Просмотрщик модели полости рта: подсветка зоны случая, мишень на поражении,
-// режимы «обычно», «прозрачно» (губы и щёки насквозь) и «срез» (снимает слои со стороны зрителя).
+// режимы «обычно» и «прозрачно» (губы и щёки насквозь).
 // Имена частей — по разделу «3D: договорённость об именах» в CLAUDE.md.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -7,11 +7,13 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Наружные мягкие ткани: в прозрачном режиме сквозь них видно, что внутри.
 const OBOLOCHKA = /^(guba_|shcheka_)/;
+const SKVOZ = 0.22; // непрозрачность оболочки в режиме «прозрачно»
 const PODSVETKA = new THREE.Color(0xffb347);
 const VPERED = new THREE.Vector3(0, 0.25, 1);
 
 const NAZVANIYA = {
   desna_verh: 'Десна верхняя', desna_niz: 'Десна нижняя', yazyk: 'Язык', nebo: 'Нёбо',
+  dno_rta: 'Дно полости рта', glotka: 'Глотка',
   shcheka_lev: 'Щека левая', shcheka_prav: 'Щека правая',
   guba_verh: 'Верхняя губа', guba_niz: 'Нижняя губа',
   guba_verh_kayma: 'Верхняя губа — красная кайма', guba_niz_kayma: 'Нижняя губа — красная кайма',
@@ -47,7 +49,6 @@ export class Prosmotr {
     this.onVybor = null;
     const r = (this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }));
     r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    r.localClippingEnabled = true;
     konteyner.appendChild(r.domElement);
 
     this.scena = new THREE.Scene();
@@ -62,9 +63,10 @@ export class Prosmotr {
     this.upr.enableDamping = true;
     this.upr.minDistance = 0.05;
     this.upr.maxDistance = 0.45;
+    // модель — вырезанный кусок головы: сверху, снизу и сзади видна изнанка, туда камеру не пускаем
+    const grad = THREE.MathUtils.degToRad;
+    Object.assign(this.upr, { minPolarAngle: grad(45), maxPolarAngle: grad(125), minAzimuthAngle: grad(-100), maxAzimuthAngle: grad(100) });
 
-    this.srez = new THREE.Plane(new THREE.Vector3(0, 0, -1), 10);
-    this.glubina = 0.25; // 0 — срез у передней стенки, 1 — у задней
     this.rezhimTek = 'obychno';
     this.zona = [];
     this.porazheniya = [];
@@ -85,16 +87,26 @@ export class Prosmotr {
     this.model.traverse((o) => {
       if (o.name && gltf.parser.associations.get(o)?.nodes !== undefined) this.chasti.set(o.name, o);
     });
-    this.model.traverse((m) => {
-      if (!m.isMesh) return;
+    const setki = [];
+    this.model.traverse((m) => m.isMesh && setki.push(m));
+    for (const m of setki) {
       m.userData.chast = this.chastDlya(m);
       m.material = m.material.clone(); // у каждой части свой материал — подсвечиваем по отдельности
       if (m.userData.chast.startsWith('porazh_')) {
         Object.assign(m.material, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-      } else {
-        m.material.clippingPlanes = [this.srez];
       }
-    });
+      if (OBOLOCHKA.test(m.userData.chast)) {
+        // В режиме «прозрачно» оболочка рисуется в два прохода: сначала только глубина, потом цвет
+        // ближайшего слоя. Так сквозь губы и щёки просвечивает один слой и кожа везде одного тона.
+        const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side }));
+        glubina.renderOrder = 5;
+        glubina.visible = false;
+        glubina.raycast = () => {};
+        glubina.userData.sluzhebnyy = true;
+        m.add(glubina);
+        m.userData.glubina = glubina;
+      }
+    }
     for (const [imya, o] of this.chasti) if (imya.startsWith('porazh_')) o.visible = false;
     this.scena.add(this.model);
     const sfera = new THREE.Box3().setFromObject(this.model).getBoundingSphere(new THREE.Sphere());
@@ -110,14 +122,15 @@ export class Prosmotr {
 
   setki(imya) {
     const out = [];
-    this.chasti.get(imya)?.traverse((m) => m.isMesh && out.push(m));
+    this.chasti.get(imya)?.traverse((m) => m.isMesh && !m.userData.sluzhebnyy && out.push(m));
     return out;
   }
 
   /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh и навести камеру. */
   pokazat({ obekty = [], porazh = '' } = {}) {
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
-    this.zona = obekty.flatMap((imya) => this.setki(imya));
+    // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
+    this.zona = obekty.flatMap((imya) => this.setki(imya)).filter((m) => !/^(kozha|srez)/.test(m.material.name));
     this.porazheniya = [];
     for (const [imya, o] of this.chasti) {
       if (!imya.startsWith('porazh_')) continue;
@@ -140,7 +153,7 @@ export class Prosmotr {
     this.kZone();
   }
 
-  /** Режим: 'obychno', 'prozrachno' или 'srez'. */
+  /** Режим: 'obychno' или 'prozrachno'. */
   rezhim(imya) {
     this.rezhimTek = imya;
     this.primenit();
@@ -148,13 +161,13 @@ export class Prosmotr {
 
   primenit() {
     const prozr = this.rezhimTek === 'prozrachno';
-    const vZone = new Set(this.zona);
     this.model.traverse((m) => {
-      if (!m.isMesh || m.userData.chast.startsWith('porazh_')) return;
-      const skvoz = prozr && OBOLOCHKA.test(m.userData.chast);
-      m.material.transparent = skvoz;
-      m.material.opacity = skvoz ? (vZone.has(m) ? 0.4 : 0.18) : 1;
-      m.material.depthWrite = !skvoz;
+      if (!m.userData.glubina) return;
+      m.userData.glubina.visible = prozr;
+      m.material.transparent = prozr;
+      m.material.opacity = prozr ? SKVOZ : 1;
+      m.material.depthWrite = !prozr;
+      m.renderOrder = prozr ? 6 : 0;
       m.material.needsUpdate = true;
     });
   }
@@ -188,8 +201,15 @@ export class Prosmotr {
 
   /** Вся модель спереди. */
   obzor(plavno = true) {
+    // вписать по ширине и высоте рамки модели: сфера вокруг глубокой модели (от губ до глотки) даёт слишком мелкий вид
+    const box = new THREE.Box3().setFromObject(this.model);
+    const raz = box.getSize(new THREE.Vector3());
+    const v = THREE.MathUtils.degToRad(this.kamera.fov) / 2;
+    const g = Math.atan(Math.tan(v) * this.kamera.aspect);
+    const d = Math.max(raz.y / 2 / Math.tan(v), raz.x / 2 / Math.tan(g)) * 1.12 + raz.z / 2;
+    const c = box.getCenter(new THREE.Vector3());
     const nap = new THREE.Vector3(0, 0.1, 1).normalize();
-    this.letet(this.centr.clone().addScaledVector(nap, this.dalnost(this.R) * 1.05), this.centr.clone(), plavno);
+    this.letet(c.clone().addScaledVector(nap, d), c, plavno);
   }
 
   kadr(t) {
@@ -203,16 +223,6 @@ export class Prosmotr {
       if (k === 1) this.polet = null;
     }
     this.upr.update();
-    if (this.rezhimTek === 'srez') {
-      // плоскость поперёк взгляда: всё ближе неё к зрителю не рисуется
-      const v = this.kamera.getWorldDirection(new THREE.Vector3());
-      const D = this.kamera.position.distanceTo(this.upr.target);
-      this.srez.normal.copy(v);
-      this.srez.constant = -(v.dot(this.kamera.position) + D - this.R + this.glubina * 2 * this.R);
-    } else {
-      this.srez.normal.set(0, 0, -1);
-      this.srez.constant = 10;
-    }
     const puls = 0.5 + 0.5 * Math.sin(t / 260);
     for (const m of this.zona) {
       m.material.emissive.copy(PODSVETKA);
@@ -244,7 +254,6 @@ export class Prosmotr {
   }
 
   vidno(h) {
-    if (this.rezhimTek === 'srez' && this.srez.distanceToPoint(h.point) < 0) return false;
     return !(this.rezhimTek === 'prozrachno' && h.object.material.transparent);
   }
 
