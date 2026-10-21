@@ -98,7 +98,8 @@ export class Prosmotr {
     this.ukazatel(r.domElement);
     new ResizeObserver(() => this.razmer()).observe(konteyner);
     this.razmer();
-    r.setAnimationLoop((t) => this.kadr(t));
+    // модель за краем экрана или на скрытой вкладке не рисуем — бережём батарею телефона
+    new IntersectionObserver(([e]) => r.setAnimationLoop(e.isIntersecting ? (t) => this.kadr(t) : null)).observe(konteyner);
   }
 
   async zagruzit(put) {
