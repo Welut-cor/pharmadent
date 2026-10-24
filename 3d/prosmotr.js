@@ -39,7 +39,10 @@ export function nazvanie(imya) {
 // skryt — спрятать части (удалённый зуб), formy — включить формы (отёк щеки: otyok_prav_niz),
 // tkani — изменить вид слизистой: [{ chasti, umnozhit: [r, g, b], sherohovatost, gladko }];
 // chasti — имена или префиксы частей (у накладок porazh_ меняется только цвет), gladko — без рельефа;
-// napr — откуда смотреть на поражения [x, y, z] (y — вверх, z — к зрителю), если они разбросаны по рту.
+// napr — откуда смотреть на поражения [x, y, z] (y — вверх, z — к зрителю), если они разбросаны по рту;
+// naskvoz — какие части в режиме «прозрачно» тоже насквозь, как губы и щёки (закрывают поражение).
+// нёбо тоже: непрозрачное, оно складками закрывает спинку языка при взгляде сверху
+const VERHNYAYA_CHELYUST = ['desna_verh', 'nebo', ...[1, 2].flatMap((k) => [1, 2, 3, 4, 5, 6, 7].map((n) => `zub_${k}${n}`))];
 export const SLUCHAI = {
   2: { obekty: ['guba_niz_vnutr', 'shcheka_lev'], porazh: 'porazh_02' },
   3: { obekty: ['guba_verh_kayma'], porazh: 'porazh_03' },
@@ -47,7 +50,7 @@ export const SLUCHAI = {
   6: { porazh: 'porazh_06', tkani: [{ chasti: SLIZISTAYA, umnozhit: [0.97, 0.9, 0.9], sherohovatost: 0.85 }] },
   7: { obekty: ['yazyk'], porazh: 'porazh_07' },
   // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
-  10: { porazh: 'porazh_10', napr: [0, 0.12, 1],
+  10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
   11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11' },
 };
@@ -106,6 +109,8 @@ export class Prosmotr {
     this.rezhimTek = 'obychno';
     this.formy = [];
     this.zona = [];
+    this.podsvetkaVkl = true;
+    this.naskvoz = [];
     this.porazheniya = [];
     this.misheni = new THREE.Group();
     this.scena.add(this.misheni);
@@ -135,18 +140,7 @@ export class Prosmotr {
       if (m.userData.chast.startsWith('porazh_')) {
         Object.assign(m.material, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
       }
-      if (OBOLOCHKA.test(m.userData.chast)) {
-        // В режиме «прозрачно» оболочка рисуется в два прохода: сначала только глубина, потом цвет
-        // ближайшего слоя. Так сквозь губы и щёки просвечивает один слой и кожа везде одного тона.
-        const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side }));
-        glubina.renderOrder = 5;
-        glubina.visible = false;
-        glubina.raycast = () => {};
-        glubina.userData.sluzhebnyy = true;
-        if (m.morphTargetInfluences) glubina.morphTargetInfluences = m.morphTargetInfluences; // отёк — и в проходе глубины
-        m.add(glubina);
-        m.userData.glubina = glubina;
-      }
+      if (OBOLOCHKA.test(m.userData.chast)) this.sGlubinoy(m);
     }
     for (const [imya, o] of this.chasti) {
       if (imya.startsWith('porazh_') || MUDROST.test(imya) || PO_VYZOVU.includes(imya)) o.visible = false;
@@ -156,6 +150,19 @@ export class Prosmotr {
     this.centr = sfera.center;
     this.R = sfera.radius;
     this.obzor(false);
+  }
+
+  /** В режиме «прозрачно» часть рисуется в два прохода: сначала только глубина, потом цвет
+   *  ближайшего слоя. Так сквозь губы и щёки просвечивает один слой и кожа везде одного тона. */
+  sGlubinoy(m) {
+    const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side }));
+    glubina.renderOrder = 5;
+    glubina.visible = false;
+    glubina.raycast = () => {};
+    glubina.userData.sluzhebnyy = true;
+    if (m.morphTargetInfluences) glubina.morphTargetInfluences = m.morphTargetInfluences; // отёк — и в проходе глубины
+    m.add(glubina);
+    m.userData.glubina = glubina;
   }
 
   chastDlya(o) {
@@ -171,8 +178,9 @@ export class Prosmotr {
 
   /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh, спрятать части skryt,
    *  включить формы formy, изменить вид тканей tkani и навести камеру. */
-  pokazat({ obekty = [], porazh = '', skryt = [], formy = [], tkani = [], napr = null } = {}) {
+  pokazat({ obekty = [], porazh = '', skryt = [], formy = [], tkani = [], napr = null, naskvoz = [] } = {}) {
     this.napr = napr;
+    this.naskvoz = naskvoz;
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
     // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
     this.zona = obekty.flatMap((imya) => this.setki(imya)).filter((m) => !/^(kozha|srez)/.test(m.material.name));
@@ -254,14 +262,23 @@ export class Prosmotr {
   primenit() {
     const prozr = this.rezhimTek === 'prozrachno';
     this.model.traverse((m) => {
-      if (!m.userData.glubina) return;
-      m.userData.glubina.visible = prozr;
-      m.material.transparent = prozr;
-      m.material.opacity = prozr ? SKVOZ : 1;
-      m.material.depthWrite = !prozr;
-      m.renderOrder = prozr ? 6 : 0;
+      if (!m.isMesh || m.userData.sluzhebnyy) return;
+      const skvoz = prozr && (OBOLOCHKA.test(m.userData.chast) || this.naskvoz.includes(m.userData.chast));
+      if (!skvoz && !m.userData.glubina) return;
+      if (!m.userData.glubina) this.sGlubinoy(m);
+      m.userData.glubina.visible = skvoz;
+      m.material.transparent = skvoz;
+      m.material.opacity = skvoz ? SKVOZ : 1;
+      m.material.depthWrite = !skvoz;
+      m.renderOrder = skvoz ? 6 : 0;
       m.material.needsUpdate = true;
     });
+  }
+
+  /** Жёлтое свечение подсвеченных частей: vkl = false — выключить (цвет ткани виден как есть). */
+  podsvetka(vkl) {
+    this.podsvetkaVkl = vkl;
+    if (!vkl) for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
   }
 
   dalnost(radius) {
@@ -323,7 +340,7 @@ export class Prosmotr {
     }
     this.upr.update();
     const puls = 0.5 + 0.5 * Math.sin(t / 260);
-    for (const m of this.zona) {
+    for (const m of this.podsvetkaVkl ? this.zona : []) {
       m.material.emissive.copy(PODSVETKA);
       m.material.emissiveIntensity = 0.12 + 0.22 * puls;
     }

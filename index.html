@@ -70,6 +70,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .panel .knopka{border:1px solid var(--line);border-radius:10px}
+.panel .knopka[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.panel [hidden]{display:none}
 .podpis{margin:10px 0 0;color:var(--muted);font-size:14px;min-height:1.5em}
 
 @media (min-width:960px){
@@ -178,6 +180,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
         </div>
         <button class="knopka" id="k-zone" disabled>К поражению</button>
         <button class="knopka" id="obzor" disabled>Весь рот</button>
+        <button class="knopka" id="podsvetka" aria-pressed="true" title="Жёлтое свечение поражённой части" disabled>Подсветка</button>
       </div>
       <p class="podpis" id="podpis">Кольцо — место поражения. Крути модель пальцем; нажми на часть рта — покажу, что это.</p>
     </section>
@@ -408,7 +411,12 @@ try {
   const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
   delete el.dataset.tekst;
   p.rezhim('prozrachno');
-  const pokazat = (nomer) => { p.pokazat(SLUCHAI[nomer] || {}); podpis.textContent = PODSKAZKA; };
+  const podsv = document.getElementById('podsvetka');
+  const pokazat = (nomer) => {
+    p.pokazat(SLUCHAI[nomer] || {});
+    podsv.hidden = !p.zona.length; // в случае без подсвеченных частей кнопке нечего выключать
+    podpis.textContent = PODSKAZKA;
+  };
   pokazat(window.tekNomer);
   document.addEventListener('sluchay', (e) => pokazat(e.detail));
 
@@ -421,6 +429,11 @@ try {
   }
   document.getElementById('k-zone').addEventListener('click', () => p.kZone());
   document.getElementById('obzor').addEventListener('click', () => p.obzor());
+  podsv.addEventListener('click', () => {
+    const vkl = podsv.getAttribute('aria-pressed') !== 'true';
+    podsv.setAttribute('aria-pressed', vkl);
+    p.podsvetka(vkl);
+  });
   document.querySelectorAll('.panel button').forEach((b) => { b.disabled = false; });
   window.prosmotr = p; // для проверки из консоли
 } catch (e) {
