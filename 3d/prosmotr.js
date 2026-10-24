@@ -12,6 +12,11 @@ const PODSVETKA = new THREE.Color(0xffb347);
 const VPERED = new THREE.Vector3(0, 0.25, 1);
 // Зубы мудрости и их десна достроены (у основы их нет): видны, только если зуб назвал случай.
 const MUDROST = /^(zub|desna)_(\d8)$/;
+// Части, которые видны, только если случай назвал их в obekty.
+const PO_VYZOVU = ['protez'];
+// Слизистая целиком — для поля tkani (сухость при ксеростомии).
+export const SLIZISTAYA = ['desna_verh', 'desna_niz', 'yazyk', 'nebo', 'dno_rta', 'glotka',
+  'shcheka_lev', 'shcheka_prav', 'guba_verh_vnutr', 'guba_niz_vnutr'];
 
 const NAZVANIYA = {
   desna_verh: 'Десна верхняя', desna_niz: 'Десна нижняя', yazyk: 'Язык', nebo: 'Нёбо',
@@ -31,9 +36,20 @@ export function nazvanie(imya) {
 }
 
 // Что показывать в случае (по «Данным осмотра»): obekty — подсвеченные части, porazh — префикс накладок,
-// skryt — спрятать части (удалённый зуб), formy — включить формы (отёк щеки: otyok_prav_niz).
+// skryt — спрятать части (удалённый зуб), formy — включить формы (отёк щеки: otyok_prav_niz),
+// tkani — изменить вид слизистой: [{ chasti, umnozhit: [r, g, b], sherohovatost, gladko }];
+// chasti — имена или префиксы частей (у накладок porazh_ меняется только цвет), gladko — без рельефа;
+// napr — откуда смотреть на поражения [x, y, z] (y — вверх, z — к зрителю), если они разбросаны по рту.
 export const SLUCHAI = {
   2: { obekty: ['guba_niz_vnutr', 'shcheka_lev'], porazh: 'porazh_02' },
+  3: { obekty: ['guba_verh_kayma'], porazh: 'porazh_03' },
+  5: { obekty: ['protez', 'shcheka_lev'], porazh: 'porazh_05', skryt: ['zub_35', 'zub_36', 'zub_37'] },
+  6: { porazh: 'porazh_06', tkani: [{ chasti: SLIZISTAYA, umnozhit: [0.97, 0.9, 0.9], sherohovatost: 0.85 }] },
+  7: { obekty: ['yazyk'], porazh: 'porazh_07' },
+  // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
+  10: { porazh: 'porazh_10', napr: [0, 0.12, 1],
+    tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
+  11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11' },
 };
 
 /** Средняя нормаль поверхностей объектов в мировых координатах (куда «смотрит» поражение). */
@@ -114,6 +130,8 @@ export class Prosmotr {
     for (const m of setki) {
       m.userData.chast = this.chastDlya(m);
       m.material = m.material.clone(); // у каждой части свой материал — подсвечиваем по отдельности
+      const mt = m.material;
+      m.userData.ishodnik = { color: mt.color.clone(), roughness: mt.roughness, roughnessMap: mt.roughnessMap, normalMap: mt.normalMap };
       if (m.userData.chast.startsWith('porazh_')) {
         Object.assign(m.material, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
       }
@@ -130,7 +148,9 @@ export class Prosmotr {
         m.userData.glubina = glubina;
       }
     }
-    for (const [imya, o] of this.chasti) if (imya.startsWith('porazh_') || MUDROST.test(imya)) o.visible = false;
+    for (const [imya, o] of this.chasti) {
+      if (imya.startsWith('porazh_') || MUDROST.test(imya) || PO_VYZOVU.includes(imya)) o.visible = false;
+    }
     this.scena.add(this.model);
     const sfera = new THREE.Box3().setFromObject(this.model).getBoundingSphere(new THREE.Sphere());
     this.centr = sfera.center;
@@ -150,8 +170,9 @@ export class Prosmotr {
   }
 
   /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh, спрятать части skryt,
-   *  включить формы formy и навести камеру. */
-  pokazat({ obekty = [], porazh = '', skryt = [], formy = [] } = {}) {
+   *  включить формы formy, изменить вид тканей tkani и навести камеру. */
+  pokazat({ obekty = [], porazh = '', skryt = [], formy = [], tkani = [], napr = null } = {}) {
+    this.napr = napr;
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
     // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
     this.zona = obekty.flatMap((imya) => this.setki(imya)).filter((m) => !/^(kozha|srez)/.test(m.material.name));
@@ -163,8 +184,10 @@ export class Prosmotr {
         continue;
       }
       const m = MUDROST.exec(imya);
-      o.visible = !skryt.includes(imya) && (!m || obekty.includes('zub_' + m[2]) || obekty.includes(imya));
+      o.visible = !skryt.includes(imya) && (!m || obekty.includes('zub_' + m[2]) || obekty.includes(imya))
+        && (!PO_VYZOVU.includes(imya) || obekty.includes(imya));
     }
+    this.vidTkaney(tkani);
     this.formy = formy;
     this.model.traverse((m) => {
       if (!m.morphTargetDictionary || m.userData.sluzhebnyy) return;
@@ -200,6 +223,26 @@ export class Prosmotr {
     }
     this.primenit();
     this.kZone();
+  }
+
+  /** Вид тканей случая (см. tkani у SLUCHAI); прежний случай сбрасывается к исходным материалам. */
+  vidTkaney(tkani) {
+    this.model.traverse((m) => {
+      const s = m.userData.ishodnik;
+      if (!s) return;
+      const mt = m.material;
+      const chast = m.userData.chast;
+      const t = tkani.find((t) => t.chasti.some((c) => chast === c || chast.startsWith(c + '_')));
+      const nakl = chast.startsWith('porazh_');
+      const sliz = mt.name.startsWith('slizistaya');
+      mt.color.copy(s.color);
+      if (t?.umnozhit && (nakl || sliz)) mt.color.multiply(new THREE.Color(...t.umnozhit));
+      const menyat = t && sliz && !nakl;
+      mt.roughness = menyat && t.sherohovatost !== undefined ? t.sherohovatost : s.roughness;
+      mt.roughnessMap = menyat && t.sherohovatost !== undefined ? null : s.roughnessMap;
+      mt.normalMap = menyat && t.gladko ? null : s.normalMap;
+      mt.needsUpdate = true;
+    });
   }
 
   /** Режим: 'obychno' или 'prozrachno'. */
@@ -249,6 +292,7 @@ export class Prosmotr {
     // поражение, обращённое к зрителю или вверх (жевательная поверхность, лунка), — смотреть ему «в лицо»
     const n = sredNormal(this.porazheniya);
     if (n.dot(VPERED) > 0.2) nap.addScaledVector(n, 1.5);
+    if (this.napr) nap.set(...this.napr);
     nap.normalize();
     const d = THREE.MathUtils.clamp(this.dalnost(Math.max(s.radius, 0.012) * 2.3), 0.11, 0.3);
     this.letet(s.center.clone().addScaledVector(nap, d), s.center.clone());

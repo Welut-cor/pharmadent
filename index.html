@@ -34,6 +34,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);fo
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
 h1{font-family:var(--f-display);font-weight:700;font-size:clamp(20px,4vw,28px);margin:0;letter-spacing:-.01em;text-wrap:balance}
 h1 small{display:block;font-family:var(--f-body);font-weight:500;font-size:14px;color:var(--muted);letter-spacing:0;margin-top:4px}
+.vybor{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.vybor select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:8px 10px;min-height:44px;flex:1 1 240px;min-width:0}
+.vybor button{font:inherit;font-size:18px;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:44px;min-height:44px;cursor:pointer}
+.vybor button:disabled{opacity:.4;cursor:default}
+.vybor span{font-size:13px;color:var(--muted)}
 nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--line)}
 nav button{font:inherit;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:10px 12px;cursor:pointer;min-height:44px}
 nav button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
@@ -138,6 +144,13 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <h1>Pharmacologia Dentalis<small>Виртуальный пациент: осмотри полость рта в 3D и подбери препарат с учётом его болезней</small></h1>
   </header>
 
+  <div class="vybor" role="group" aria-label="Случай">
+    <button id="pred" aria-label="Предыдущий случай">←</button>
+    <select id="sluchay" aria-label="Случай"></select>
+    <button id="sled" aria-label="Следующий случай">→</button>
+    <span id="schet-mini" aria-live="polite"></span>
+  </div>
+
   <nav role="tablist" aria-label="Задание">
     <button role="tab" id="tab-test" aria-selected="true" aria-controls="p-test" data-tab="test">Выбор препарата</button>
     <button role="tab" id="tab-ii" aria-selected="false" aria-controls="p-ii" data-tab="ii" tabindex="-1">Найди ошибку ИИ</button>
@@ -172,7 +185,7 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     <section class="card zadanie" id="p-test" role="tabpanel" aria-labelledby="tab-test"></section>
 
     <section class="card zadanie" id="p-ii" role="tabpanel" aria-labelledby="tab-ii" hidden>
-      <p class="src">Задание: ИИ-ассистент предложил план лечения этой пациентки. Нажми на строки, в которых, по-твоему, есть ошибка, затем «Проверить».</p>
+      <p class="src">Задание: ИИ-ассистент предложил план лечения. Нажми на строки, в которых, по-твоему, есть ошибка, затем «Проверить».</p>
       <div class="ai">
         <div class="ai-head"><span>Ответ ИИ-ассистента</span><span>в демо — пример; в итоговой версии — реальный ответ нейросети с моделью и датой</span></div>
         <div id="ii-stroki"></div>
@@ -196,14 +209,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 // Тест и «Найди ошибку ИИ» — обычный скрипт: работают и с диска, где 3D не грузится.
 const $ = (s) => document.querySelector(s);
 const BUKVY = 'АБВГ';
-const SL = window.SLUCHAI_DANNYE.sluchai[0];
+const VSE = window.SLUCHAI_DANNYE.sluchai;
+let SL = VSE[0];
+const otvety = {}; // номер случая → { poryadok, i, verno }: к отвеченному случаю можно вернуться
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const abzacy = (s) => s.split(/\n\s*\n/).map((p) => `<p class="cap">${esc(p.trim())}</p>`).join('');
 const plavno = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
-
-// ---------- Карта пациента ----------
-$('#k-pacient').textContent = SL.pacient;
-document.querySelectorAll('[data-pole]').forEach((dd) => { dd.textContent = SL[dd.dataset.pole]; });
 
 // ---------- Выбор препарата: варианты в случайном порядке, буквы — по месту на экране ----------
 let poryadok = [];
@@ -216,17 +227,28 @@ function peremeshat(a) {
   return a;
 }
 function nachatTest() {
-  poryadok = peremeshat(SL.varianty);
+  const o = otvety[SL.nomer];
+  poryadok = o ? o.poryadok : peremeshat(SL.varianty);
   $('#p-test').innerHTML = `
-    <div class="eyebrow">Вопрос 1 из 1</div>
+    <div class="eyebrow">Случай ${VSE.indexOf(SL) + 1} из ${VSE.length}</div>
     <p class="q cap">${esc(SL.vopros)}</p>
     <div class="opts">${poryadok.map((v, i) => `<button class="opt" data-i="${i}"><span class="k">${BUKVY[i]}</span><span class="cap">${esc(v.tekst)}</span></button>`).join('')}</div>
     <div id="razbor" aria-live="polite"></div>`;
   $('#p-test').querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => vybrat(+b.dataset.i)));
+  if (o) vybrat(o.i);
+}
+function schet() {
+  const vse = Object.values(otvety);
+  return { verno: vse.filter((o) => o.verno).length, vsego: vse.length };
 }
 function vybrat(i) {
   const iV = poryadok.findIndex((v) => v.bukva === SL.pravilnyy);
   const verno = i === iV;
+  otvety[SL.nomer] = { poryadok, i, verno };
+  obnovitVybor();
+  const { verno: v, vsego } = schet();
+  const konec = vsego === VSE.length;
+  const sled = VSE[VSE.indexOf(SL) + 1];
   document.querySelectorAll('#p-test .opt').forEach((b, j) => {
     b.disabled = true;
     if (j === iV) b.classList.add('good');
@@ -238,11 +260,55 @@ function vybrat(i) {
     <h2 class="h">Разбор вариантов</h2>
     ${poryadok.map((v, j) => `<div class="fb ${j === iV ? 'good' : j === i ? 'badc' : ''}"><strong>${BUKVY[j]}. ${esc(v.tekst)}${metka(j)}</strong><p class="cap">${esc(v.obyasnenie)}</p></div>`).join('')}
     <section class="podhod"><h2 class="h">Индивидуальный подход</h2>${abzacy(SL.podhod)}</section>
-    <div class="schet"><b>${verno ? 1 : 0} из 1</b><span>верных ответов. В полной версии — 20 случаев подряд и общий счёт.</span></div>
-    <div class="actions"><button class="btn" id="zanovo">Пройти заново</button><button class="btn ghost" id="k-ii">Найди ошибку ИИ</button></div>`;
-  $('#zanovo').onclick = () => { nachatTest(); pokazatNachalo($('#p-test')); };
-  $('#k-ii').onclick = () => vkladka('ii');
+    <div class="schet"><b>${v} из ${vsego}</b><span>${konec ? `верных ответов — пройдены все ${VSE.length} случаев.`
+      : `верных ответов; отвечено ${vsego} из ${VSE.length} случаев.`}</span></div>
+    <div class="actions">
+      ${sled ? '<button class="btn" id="dalshe">Следующий случай</button>' : ''}
+      <button class="btn ghost" id="zanovo">Ответить заново</button>
+      ${II.length ? '<button class="btn ghost" id="k-ii">Найди ошибку ИИ</button>' : ''}
+      ${konec ? '<button class="btn ghost" id="vse-zanovo">Пройти все заново</button>' : ''}
+    </div>`;
+  const knopka = (id, f) => { const b = $(id); if (b) b.onclick = f; };
+  knopka('#dalshe', () => { otkryt(sled.nomer); pokazatNachalo($('.karta')); });
+  knopka('#zanovo', () => { delete otvety[SL.nomer]; obnovitVybor(); nachatTest(); pokazatNachalo($('#p-test')); });
+  knopka('#k-ii', () => vkladka('ii'));
+  knopka('#vse-zanovo', () => {
+    for (const n in otvety) delete otvety[n];
+    otkryt(VSE[0].nomer);
+    pokazatNachalo($('.karta'));
+  });
 }
+
+// ---------- Выбор случая ----------
+function obnovitVybor() {
+  $('#sluchay').innerHTML = VSE.map((s) => {
+    const o = otvety[s.nomer];
+    return `<option value="${s.nomer}">Случай ${s.nomer}. ${esc(s.nazvanie)}${o ? (o.verno ? ' — верно' : ' — неверно') : ''}</option>`;
+  }).join('');
+  $('#sluchay').value = SL.nomer;
+  const k = VSE.indexOf(SL);
+  $('#pred').disabled = k === 0;
+  $('#sled').disabled = k === VSE.length - 1;
+  const { verno, vsego } = schet();
+  $('#schet-mini').textContent = vsego ? `Верно ${verno} из ${vsego}` : `${VSE.length} случаев`;
+}
+function otkryt(nomer) {
+  SL = VSE.find((s) => s.nomer === nomer) || VSE[0];
+  $('#k-pacient').textContent = SL.pacient;
+  document.querySelectorAll('[data-pole]').forEach((dd) => { dd.textContent = SL[dd.dataset.pole]; });
+  II = OSHIBKI_II[SL.nomer] || [];
+  $('#tab-ii').hidden = !II.length;
+  if (!II.length && $('#p-test').hidden) vkladka('test');
+  obnovitVybor();
+  nachatTest();
+  nachatII();
+  history.replaceState(null, '', '#' + SL.nomer);
+  window.tekNomer = SL.nomer; // 3D подхватит при загрузке
+  document.dispatchEvent(new CustomEvent('sluchay', { detail: SL.nomer }));
+}
+$('#sluchay').onchange = (e) => otkryt(+e.target.value);
+$('#pred').onclick = () => otkryt(VSE[VSE.indexOf(SL) - 1].nomer);
+$('#sled').onclick = () => otkryt(VSE[VSE.indexOf(SL) + 1].nomer);
 
 // ---------- Найди ошибку ИИ ----------
 // В демо ответ «ИИ» составлен по тексту случая: ошибки — неверные варианты из data/*.json (err — буква варианта),
@@ -257,8 +323,7 @@ const OSHIBKI_II = {
     { t: 'Если язвы часто повторяются, долго не заживают или становятся многочисленными, — обследовать: дефицит железа, витамина B12, фолиевой кислоты, системные заболевания.' },
   ],
 };
-const II = OSHIBKI_II[SL.nomer] || [];
-if (!II.length) $('#tab-ii').hidden = true;
+let II = [];
 const pochemu = (bukva) => SL.varianty.find((v) => v.bukva === bukva).obyasnenie;
 let otmecheny = new Set(), provereno = false;
 function nachatII() {
@@ -292,12 +357,12 @@ $('#ii-proverit').onclick = () => {
     ${II.map((l, i) => (l.err ? `<div class="fb ${otmecheny.has(i) ? 'good' : 'badc'}"><strong>Строка ${i + 1} — ${otmecheny.has(i) ? 'найдено' : 'пропущено'}</strong><p class="cap">${esc(pochemu(l.err))}</p></div>`
       : otmecheny.has(i) ? `<div class="fb"><strong>Строка ${i + 1} — ошибки нет</strong></div>` : '')).join('')}
     <section class="podhod"><h2 class="h">Как правильно</h2>${abzacy(SL.podhod.split(/\n\s*\n/)[0])}</section>
-    <p class="src">Вывод для студента: ИИ уверенно предлагает препараты, которые не подходят этой пациентке. Проверяй назначение по болезням и лекарствам пациента сам.</p>`;
+    <p class="src">Вывод для студента: ИИ уверенно предлагает препараты, которые не подходят этому пациенту. Проверяй назначение по болезням и лекарствам пациента сам.</p>`;
 };
 $('#ii-zanovo').onclick = nachatII;
 
 // ---------- Вкладки ----------
-const VKLADKI = [...document.querySelectorAll('nav [role=tab]')].filter((b) => !b.hidden);
+const VKLADKI = [...document.querySelectorAll('nav [role=tab]')];
 function pokazatNachalo(el) {
   const top = el.getBoundingClientRect().top;
   if (top < 0 || top > innerHeight * 0.7) el.scrollIntoView({ behavior: plavno(), block: 'start' });
@@ -315,15 +380,15 @@ VKLADKI.forEach((b, i) => {
   b.addEventListener('click', () => vkladka(b.dataset.tab));
   b.addEventListener('keydown', (e) => {
     const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-    if (!d) return;
-    const s = VKLADKI[(i + d + VKLADKI.length) % VKLADKI.length];
+    const vidny = VKLADKI.filter((x) => !x.hidden);
+    if (!d || vidny.length < 2) return;
+    const s = vidny[(vidny.indexOf(b) + d + vidny.length) % vidny.length];
     s.focus();
     vkladka(s.dataset.tab);
   });
 });
 
-nachatTest();
-nachatII();
+otkryt(+location.hash.slice(1) || VSE[0].nomer);
 if (location.protocol === 'file:') {
   $('#model').dataset.tekst = '3D не открывается с диска. Запусти в папке site: python -m http.server — и открой http://localhost:8000';
 }
@@ -343,7 +408,9 @@ try {
   const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
   delete el.dataset.tekst;
   p.rezhim('prozrachno');
-  p.pokazat(SLUCHAI[window.SLUCHAI_DANNYE.sluchai[0].nomer]);
+  const pokazat = (nomer) => { p.pokazat(SLUCHAI[nomer] || {}); podpis.textContent = PODSKAZKA; };
+  pokazat(window.tekNomer);
+  document.addEventListener('sluchay', (e) => pokazat(e.detail));
 
   p.onVybor = (imya) => { podpis.textContent = imya ? nazvanie(imya) : PODSKAZKA; };
   for (const b of document.querySelectorAll('[data-rezhim]')) {
