@@ -44,11 +44,18 @@ export function nazvanie(imya) {
 // нёбо тоже: непрозрачное, оно складками закрывает спинку языка при взгляде сверху
 const VERHNYAYA_CHELYUST = ['desna_verh', 'nebo', ...[1, 2].flatMap((k) => [1, 2, 3, 4, 5, 6, 7].map((n) => `zub_${k}${n}`))];
 export const SLUCHAI = {
-  2: { obekty: ['guba_niz_vnutr', 'shcheka_lev'], porazh: 'porazh_02' },
+  // 1 и 4: поражения на обеих щеках — их нормали гасят друг друга, направление взгляда задано
+  // в 1 язык сверху закрыт верхними зубами — как в 10, верхняя челюсть в «прозрачно» насквозь;
+  // язык не подсвечиваем: на оранжевом белый налёт теряется
+  1: { obekty: ['shcheka_lev', 'shcheka_prav', 'nebo'], porazh: 'porazh_01', napr: [0, 0.6, 1],
+    naskvoz: VERHNYAYA_CHELYUST },
+  2:{ obekty: ['guba_niz_vnutr', 'shcheka_lev'], porazh: 'porazh_02' },
   3: { obekty: ['guba_verh_kayma'], porazh: 'porazh_03' },
+  4: { obekty: ['shcheka_lev', 'shcheka_prav'], porazh: 'porazh_04', napr: [0, 0.1, 1] },
   5: { obekty: ['protez', 'shcheka_lev'], porazh: 'porazh_05', skryt: ['zub_35', 'zub_36', 'zub_37'] },
   6: { porazh: 'porazh_06', tkani: [{ chasti: SLIZISTAYA, umnozhit: [0.97, 0.9, 0.9], sherohovatost: 0.85 }] },
   7: { obekty: ['yazyk'], porazh: 'porazh_07' },
+  8: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_08' },
   // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
   10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
