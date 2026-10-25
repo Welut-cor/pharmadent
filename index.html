@@ -57,7 +57,9 @@ section{margin-top:40px}
 .fakty b{font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
 .scena{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:1/1;max-height:520px;width:100%;
   background:radial-gradient(120% 90% at 50% 35%,var(--card),var(--stage));border:1px solid var(--line)}
-.scena img{width:100%;height:100%;object-fit:cover;object-position:50% 55%;display:block}
+.scena img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 55%;display:block;transition:opacity .9s ease}
+.scena img.skryt,.scena figcaption.skryt{opacity:0}
+.scena figcaption{transition:opacity .4s ease}
 .scena figcaption{position:absolute;left:12px;right:12px;bottom:12px;background:var(--card);border:1px solid var(--line);
   border-radius:10px;padding:10px 12px;font-size:13px;box-shadow:0 4px 16px rgb(0 0 0 / .08)}
 .scena figcaption strong{display:block;font-size:14px}
@@ -136,6 +138,7 @@ section{margin-top:40px}
       </div>
       <figure class="scena" id="scena" style="margin:0">
         <img src="kartinki/sluchay-3.webp" alt="3D-модель полости рта: пузырьки и корочки на красной кайме верхней губы, вокруг — кольцо, отмечающее поражение" width="720" height="820">
+        <img class="skryt" alt="" aria-hidden="true" width="720" height="820">
         <figcaption><strong id="scena-zag">Случай 3</strong><span id="scena-pac"></span></figcaption>
       </figure>
     </div>
@@ -190,11 +193,54 @@ document.getElementById('chislo').nextSibling.textContent = ' ' + sklon(VSE.leng
 document.getElementById('nachat').href = 'sluchay.html#' + VSE[0].nomer;
 document.getElementById('sl-podpis').textContent = 'Нажми на случай, чтобы открыть его';
 
-const geroy = VSE.find((s) => s.nomer === 3);
-if (geroy) {
-  document.getElementById('scena-zag').textContent = `Случай ${geroy.nomer}. ${geroy.nazvanie}`;
-  document.getElementById('scena-pac').textContent = `${geroy.pacient[0].toUpperCase()}${geroy.pacient.slice(1)} · ${bolezni(geroy).join(', ')}`;
-} else document.querySelector('#scena figcaption').hidden = true;
+// Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему.
+// Пауза, пока курсор или фокус на кадре и пока вкладка скрыта; при «уменьшить движение» кадр не меняется.
+const SMENA = 15000;
+const scena = document.getElementById('scena');
+const podpis = scena.querySelector('figcaption');
+const kadry = [...scena.querySelectorAll('img')];
+let vidim = 0;
+let tek = VSE.findIndex((s) => s.nomer === 3);
+
+function podpisat(s) {
+  document.getElementById('scena-zag').textContent = `Случай ${s.nomer}. ${s.nazvanie}`;
+  document.getElementById('scena-pac').textContent = `${s.pacient[0].toUpperCase()}${s.pacient.slice(1)} · ${bolezni(s).join(', ')}`;
+}
+
+async function dalshe() {
+  tek = (tek + 1) % VSE.length;
+  const s = VSE[tek];
+  const sled = kadry[1 - vidim];
+  sled.src = `kartinki/sluchay-${s.nomer}.webp`;
+  try {
+    await sled.decode(); // меняем, только когда кадр загружен; нет кадра — случай пропускаем
+  } catch {
+    return;
+  }
+  sled.alt = `3D-модель полости рта: ${s.kak_vyglyadit}`;
+  sled.removeAttribute('aria-hidden');
+  sled.classList.remove('skryt');
+  const bylo = kadry[vidim];
+  bylo.classList.add('skryt');
+  bylo.alt = '';
+  bylo.setAttribute('aria-hidden', 'true');
+  vidim = 1 - vidim;
+  podpis.classList.add('skryt');
+  setTimeout(() => { podpisat(s); podpis.classList.remove('skryt'); }, 400);
+}
+
+if (tek < 0) podpis.hidden = true;
+else {
+  podpisat(VSE[tek]);
+  let pauza = false;
+  scena.addEventListener('mouseenter', () => { pauza = true; });
+  scena.addEventListener('mouseleave', () => { pauza = false; });
+  scena.addEventListener('focusin', () => { pauza = true; });
+  scena.addEventListener('focusout', () => { pauza = false; });
+  if (VSE.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(() => { if (!pauza && !document.hidden) dalshe(); }, SMENA);
+  }
+}
 
 document.getElementById('setka').innerHTML = VSE.map((s) => `
   <li><a class="kartochka" href="sluchay.html#${s.nomer}">
