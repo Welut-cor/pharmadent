@@ -195,7 +195,7 @@ document.getElementById('sl-podpis').textContent = 'Нажми на случай
 
 // Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему.
 // Пауза, пока курсор или фокус на кадре и пока вкладка скрыта; при «уменьшить движение» кадр не меняется.
-const SMENA = 15000;
+const SMENA = 12500;
 const scena = document.getElementById('scena');
 const podpis = scena.querySelector('figcaption');
 const kadry = [...scena.querySelectorAll('img')];
