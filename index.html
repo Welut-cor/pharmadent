@@ -253,6 +253,9 @@ document.getElementById('setka').innerHTML = VSE.map((s) => `
       <span class="otkryt">Открыть случай →</span>
     </div>
   </a></li>`).join('');
+
+// Кэш для работы без сети (sw.js): с первого захода с интернетом сайт открывается и офлайн
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>

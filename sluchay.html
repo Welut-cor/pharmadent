@@ -133,6 +133,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .line.miss{border-color:var(--bad);background:var(--bad-soft)}
 .line.false{border-color:var(--bad);border-style:dashed}
 .line:disabled{cursor:default}
+.zamok p{margin:0 0 12px}
 #ii-itog{display:flex;flex-direction:column;gap:12px}
 #ii-itog:empty{display:none}
 
@@ -191,6 +192,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <section class="card zadanie" id="p-test" role="tabpanel" aria-labelledby="tab-test"></section>
 
     <section class="card zadanie" id="p-ii" role="tabpanel" aria-labelledby="tab-ii" hidden>
+      <div id="ii-zamok" class="zamok">
+        <p>Сначала ответь на вопрос во вкладке «Выбор препарата»: разбор ошибок ИИ подсказал бы ответ.</p>
+        <div class="actions"><button class="btn" id="k-testu">К выбору препарата</button></div>
+      </div>
+      <div id="ii-telo" class="zadanie">
       <p class="src">Задание: ИИ-ассистент предложил план лечения. Нажми на строки, в которых, по-твоему, есть ошибка, затем «Проверить».</p>
       <div class="ai">
         <div class="ai-head"><span>Ответ ИИ-ассистента</span><span>в демо — пример; в итоговой версии — реальный ответ нейросети с моделью и датой</span></div>
@@ -201,6 +207,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
         <button class="btn ghost" id="ii-zanovo">Начать заново</button>
       </div>
       <div id="ii-itog" aria-live="polite"></div>
+      </div>
     </section>
   </div>
 </div>
@@ -247,6 +254,7 @@ function vybrat(i) {
   const verno = i === iV;
   otvety[SL.nomer] = { poryadok, i, verno };
   obnovitVybor();
+  zamokII();
   const { verno: v, vsego } = schet();
   const konec = vsego === VSE.length;
   const sled = VSE[VSE.indexOf(SL) + 1];
@@ -271,7 +279,7 @@ function vybrat(i) {
     </div>`;
   const knopka = (id, f) => { const b = $(id); if (b) b.onclick = f; };
   knopka('#dalshe', () => { otkryt(sled.nomer); pokazatNachalo($('.karta')); });
-  knopka('#zanovo', () => { delete otvety[SL.nomer]; obnovitVybor(); nachatTest(); pokazatNachalo($('#p-test')); });
+  knopka('#zanovo', () => { delete otvety[SL.nomer]; obnovitVybor(); nachatTest(); nachatII(); zamokII(); pokazatNachalo($('#p-test')); });
   knopka('#k-ii', () => vkladka('ii'));
   knopka('#vse-zanovo', () => {
     for (const n in otvety) delete otvety[n];
@@ -303,6 +311,7 @@ function otkryt(nomer) {
   obnovitVybor();
   nachatTest();
   nachatII();
+  zamokII();
   history.replaceState(null, '', '#' + SL.nomer);
   window.tekNomer = SL.nomer; // 3D подхватит при загрузке
   document.dispatchEvent(new CustomEvent('sluchay', { detail: SL.nomer }));
@@ -419,6 +428,13 @@ $('#ii-proverit').onclick = () => {
     <p class="src">Вывод для студента: ${esc(VYVOD_II[SL.nomer] || 'ИИ отвечает уверенно и тогда, когда ошибается. Проверяй каждое назначение сам.')}</p>`;
 };
 $('#ii-zanovo').onclick = nachatII;
+// Ошибки ИИ — это неверные варианты теста, а разбор называет верный препарат: до ответа на тест задание закрыто
+function zamokII() {
+  const otkryto = !!otvety[SL.nomer];
+  $('#ii-zamok').hidden = otkryto;
+  $('#ii-telo').hidden = !otkryto;
+}
+$('#k-testu').onclick = () => vkladka('test');
 
 // ---------- Вкладки ----------
 const VKLADKI = [...document.querySelectorAll('nav [role=tab]')];
@@ -450,6 +466,8 @@ VKLADKI.forEach((b, i) => {
 otkryt(+location.hash.slice(1) || VSE[0].nomer);
 if (location.protocol === 'file:') {
   $('#model').dataset.tekst = '3D не открывается с диска. Запусти в папке site: python -m http.server — и открой http://localhost:8000';
+} else if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js'); // кэш для работы без сети
 }
 </script>
 
