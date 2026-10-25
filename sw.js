@@ -8,7 +8,7 @@ const ZHDAT = 4000;
 self.window = self;
 importScripts('data/sluchai.js');
 const FAYLY = [
-  './', 'index.html', 'sluchay.html', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js', 'models/polost_rta.glb',
+  './', 'index.html', 'sluchay.html', 'tema.js', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js', 'models/polost_rta.glb',
   'vendor/three/three.module.js', 'vendor/three/three.core.js',
   'vendor/three/addons/loaders/GLTFLoader.js', 'vendor/three/addons/controls/OrbitControls.js',
   'vendor/three/addons/utils/BufferGeometryUtils.js', 'vendor/three/addons/utils/SkeletonUtils.js',

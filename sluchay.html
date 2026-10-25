@@ -6,6 +6,7 @@
 <title>Pharmacologia Dentalis</title>
 <meta name="description" content="Тренажёр для студентов-стоматологов: виртуальный пациент, 3D-модель полости рта и выбор препарата с учётом сопутствующих болезней.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e66'/%3E%3Cpath d='M9 9c2-2 5-1 7 0 2-1 5-2 7 0 2 3 0 7-1 10l-1 5c0 2-2 2-2 0l-1-4c0-1-2-1-2 0l-1 4c0 2-2 2-2 0l-1-5c-1-3-3-7-1-10z' fill='%23fff'/%3E%3C/svg%3E">
+<script src="tema.js"></script>
 <link rel="stylesheet" href="vendor/shrifty/shrifty.css">
 <style>
 /* Демо: один случай целиком. Карта пациента и 3D общие для обоих заданий.
@@ -36,6 +37,9 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(20px,4vw,28px);m
 h1 small{display:block;font-family:var(--f-body);font-weight:500;font-size:14px;color:var(--muted);letter-spacing:0;margin-top:4px}
 .domoy{color:var(--accent);font-weight:600;text-decoration:none;padding:10px 0;min-height:44px}
 .domoy:hover{text-decoration:underline}
+.shapka-pravo{display:flex;align-items:center;gap:12px}
+.tema{display:grid;place-items:center;width:44px;height:44px;padding:0;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.tema svg{width:20px;height:20px}
 .vybor{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
 .vybor select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;
   padding:8px 10px;min-height:44px;flex:1 1 240px;min-width:0}
@@ -178,7 +182,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 <div class="wrap">
   <header>
     <h1>Pharmacologia Dentalis<small>Виртуальный пациент: осмотри полость рта в 3D и подбери препарат с учётом его болезней</small></h1>
-    <a class="domoy" href="index.html">← Все случаи</a>
+    <div class="shapka-pravo">
+      <a class="domoy" href="index.html">← Все случаи</a>
+      <button class="tema" id="tema" aria-label="Тема"></button>
+    </div>
   </header>
 
   <div class="vybor" role="group" aria-label="Случай">
@@ -230,7 +237,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
       <div id="ii-telo" class="zadanie">
       <p class="src">Задание: ИИ-ассистент предложил план лечения. Нажми на строки, в которых, по-твоему, есть ошибка, затем «Проверить».</p>
       <div class="ai">
-        <div class="ai-head"><span>Ответ ИИ-ассистента</span><span>в демо — пример; в итоговой версии — реальный ответ нейросети с моделью и датой</span></div>
+        <div class="ai-head"><span>Ответ ИИ-ассистента</span><span>учебный пример, составлен по тексту случая</span></div>
         <div id="ii-stroki"></div>
       </div>
       <div class="actions">
