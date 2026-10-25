@@ -120,6 +120,37 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .btn:disabled{opacity:.5;cursor:default}
 .src{font-size:13px;color:var(--muted);margin:0}
 
+/* светофор: метки у вариантов после ответа; цвет дублирует слово и форма точки */
+.svet{font:inherit;font-size:13px;font-weight:600;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:none;border:0;
+  padding:4px 0;margin:2px 0 4px;min-height:44px;color:var(--ink);cursor:pointer;text-align:left}
+.sv{display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:999px;padding:3px 10px 3px 8px;line-height:1.3}
+.sv::before{content:"";width:10px;height:10px;border-radius:50%;flex:none;background:currentColor}
+.sv.sv-konflikt{color:var(--bad);background:var(--bad-soft)}
+.sv.sv-ostorozhno{color:var(--warn);background:var(--warn-soft)}
+.sv.sv-ostorozhno::before{border-radius:0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.sv.sv-ne_po_pokaz{color:var(--muted);background:var(--card)}
+.sv.sv-ne_po_pokaz::before{background:none;box-shadow:inset 0 0 0 2px currentColor}
+.sv.sv-podhodit{color:var(--ok);background:var(--ok-soft)}
+.sv.sv-net{color:var(--muted);border-style:dashed}
+.sv.sv-net::before{display:none}
+.sv-str{color:var(--accent);font-weight:500;text-decoration:underline dotted;text-underline-offset:3px}
+.sv-str::after{content:" ▾"}
+.svet[aria-expanded="true"] .sv-str::after{content:" ▴"}
+.sv-pr{font-size:14px;margin:0 0 8px;padding:10px 12px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+.sv-pr ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.sv-pr li{border-left:3px solid var(--muted);padding-left:10px}
+.sv-pr li.sv-konflikt{border-color:var(--bad)} .sv-pr li.sv-konflikt b{color:var(--bad)}
+.sv-pr li.sv-ostorozhno{border-color:var(--warn)} .sv-pr li.sv-ostorozhno b{color:var(--warn)}
+.sv-pr li.sv-podhodit{border-color:var(--ok)} .sv-pr li.sv-podhodit b{color:var(--ok)}
+.sv-gde,.sv-ist{display:block;color:var(--muted);font-size:13px}
+.sv-ist{font-size:12px}
+.sv-pr a{color:inherit}
+.karta mark{color:inherit;border-radius:4px;padding:0 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.karta mark.sv-konflikt{background:var(--bad-soft);box-shadow:0 0 0 1px var(--bad)}
+.karta mark.sv-ostorozhno{background:var(--warn-soft);box-shadow:0 0 0 1px var(--warn)}
+.karta mark.sv-ne_po_pokaz{background:var(--stage);box-shadow:0 0 0 1px var(--muted)}
+.karta mark.sv-podhodit{background:var(--ok-soft);box-shadow:0 0 0 1px var(--ok)}
+
 /* найди ошибку ИИ */
 .ai{border:1px dashed var(--accent);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
 .ai-head{display:flex;justify-content:space-between;gap:4px 8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
@@ -213,6 +244,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 </div>
 
 <script src="data/sluchai.js"></script>
+<script src="data/svetofor.js"></script>
 <script>
 // Тест и «Найди ошибку ИИ» — обычный скрипт: работают и с диска, где 3D не грузится.
 const $ = (s) => document.querySelector(s);
@@ -243,6 +275,7 @@ function nachatTest() {
     <div class="opts">${poryadok.map((v, i) => `<button class="opt" data-i="${i}"><span class="k">${BUKVY[i]}</span><span class="cap">${esc(v.tekst)}</span></button>`).join('')}</div>
     <div id="razbor" aria-live="polite"></div>`;
   $('#p-test').querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => vybrat(+b.dataset.i)));
+  podsvetitKartu([]);
   if (o) vybrat(o.i);
 }
 function schet() {
@@ -264,10 +297,13 @@ function vybrat(i) {
     else if (j === i) b.classList.add('badc');
   });
   const metka = (j) => (j === iV && j === i ? ' — ваш ответ, верный' : j === iV ? ' — верный ответ' : j === i ? ' — ваш ответ' : '');
+  const svet = SV ? poryadok.map(svetofor) : [];
   $('#razbor').innerHTML = `
     <div class="itog ${verno ? 'good' : 'badc'}"><strong>${verno ? 'Верно' : 'Неверно'}</strong>${verno ? '' : `Верный ответ — ${BUKVY[iV]}. ${esc(poryadok[iV].tekst)}.`}</div>
     <h2 class="h">Разбор вариантов</h2>
-    ${poryadok.map((v, j) => `<div class="fb ${j === iV ? 'good' : j === i ? 'badc' : ''}"><strong>${BUKVY[j]}. ${esc(v.tekst)}${metka(j)}</strong><p class="cap">${esc(v.obyasnenie)}</p></div>`).join('')}
+    ${SV ? '<p class="src">Метка у варианта — светофор: сверка с болезнями и лекарствами пациента. Нажми на метку — покажу причину и строку карты.</p>' : ''}
+    ${poryadok.map((v, j) => `<div class="fb ${j === iV ? 'good' : j === i ? 'badc' : ''}"><strong>${BUKVY[j]}. ${esc(v.tekst)}${metka(j)}</strong>${SV ? svetHtml(svet[j], j) : ''}<p class="cap">${esc(v.obyasnenie)}</p></div>`).join('')}
+    ${SV ? `<p class="src">${esc(SV.status)}</p>` : ''}
     <section class="podhod"><h2 class="h">Индивидуальный подход</h2>${abzacy(SL.podhod)}</section>
     <div class="schet"><b>${v} из ${vsego}</b><span>${konec ? `верных ответов — пройдены все ${VSE.length} случаев.`
       : `верных ответов; отвечено ${vsego} из ${VSE.length} случаев.`}</span></div>
@@ -277,6 +313,14 @@ function vybrat(i) {
       ${II.length ? '<button class="btn ghost" id="k-ii">Найди ошибку ИИ</button>' : ''}
       ${konec ? '<button class="btn ghost" id="vse-zanovo">Пройти все заново</button>' : ''}
     </div>`;
+  $('#razbor').querySelectorAll('.svet').forEach((b) => b.addEventListener('click', () => {
+    const vkl = b.getAttribute('aria-expanded') !== 'true';
+    $('#razbor').querySelectorAll('.svet').forEach((x) => { // открыта одна причина: подсветка карты — её
+      x.setAttribute('aria-expanded', vkl && x === b);
+      $('#sv-' + x.dataset.j).hidden = !(vkl && x === b);
+    });
+    podsvetitKartu(vkl ? svet[+b.dataset.j].hity : []);
+  }));
   const knopka = (id, f) => { const b = $(id); if (b) b.onclick = f; };
   knopka('#dalshe', () => { otkryt(sled.nomer); pokazatNachalo($('.karta')); });
   knopka('#zanovo', () => { delete otvety[SL.nomer]; obnovitVybor(); nachatTest(); nachatII(); zamokII(); pokazatNachalo($('#p-test')); });
@@ -287,6 +331,68 @@ function vybrat(i) {
     pokazatNachalo($('.karta'));
   });
 }
+
+// ---------- Светофор: сверка варианта с картой пациента, видна после ответа ----------
+// Правила общие — «группа препарата × состояние пациента» (data/svetofor.json → data/svetofor.js),
+// поэтому новый случай проверяется сам, если его препараты и болезни есть в словарях.
+// Сопоставление то же, что в tools/sobrat_svetofor.py: меняешь одно — меняй и другое.
+const SV = window.SVETOFOR;
+const UROVNI = { konflikt: 'Конфликт', ostorozhno: 'Осторожно', ne_po_pokaz: 'Не по показаниям', podhodit: 'Подходит', net: 'Правил нет' };
+const PORYADOK = Object.keys(UROVNI);
+const norm = (s) => s.toLowerCase().replace(/ё/g, 'е'); // длину строки не меняет: позиции годятся для исходного текста
+function svetofor(v) {
+  const t = norm(v.tekst);
+  const gruppy = SV.gruppy.filter((g) => g.est.some((a) => [].concat(a).every((k) => t.includes(norm(k))))).map((g) => g.id);
+  const sost = {}; // состояние → где оно в карте
+  for (const s of SV.sostoyaniya) {
+    const pole = norm(SL[s.pole]);
+    for (const k of s.est) {
+      const i = pole.indexOf(norm(k));
+      if (i >= 0) { sost[s.id] = { pole: s.pole, i }; break; }
+    }
+  }
+  const hity = SV.pravila.filter((p) => gruppy.includes(p.gruppa) && (p.sostoyanie === '*' || sost[p.sostoyanie]))
+    .map((p) => ({ ...p, gde: sost[p.sostoyanie] }))
+    .sort((a, b) => PORYADOK.indexOf(a.uroven) - PORYADOK.indexOf(b.uroven));
+  const est = new Set(hity.map((h) => h.uroven));
+  const metki = PORYADOK.slice(0, 3).filter((u) => est.has(u)); // «подходит» — только если замечаний нет
+  return { hity, metki: metki.length ? metki : [est.has('podhodit') ? 'podhodit' : 'net'] };
+}
+// Строка карты вокруг найденного слова — до запятой или точки с запятой
+function kusok(tekst, i) {
+  let a = i, b = i;
+  while (a > 0 && !',;'.includes(tekst[a - 1])) a--;
+  while (b < tekst.length && !',;.'.includes(tekst[b])) b++;
+  while (tekst[a] === ' ') a++;
+  return [a, b];
+}
+function podsvetitKartu(hity) {
+  document.querySelectorAll('.karta [data-pole]').forEach((dd) => {
+    const tekst = SL[dd.dataset.pole];
+    const kuski = hity.filter((h) => h.gde && h.gde.pole === dd.dataset.pole)
+      .map((h) => [...kusok(tekst, h.gde.i), h.uroven]).sort((x, y) => x[0] - y[0]);
+    let html = '', poz = 0;
+    for (const [a, b, u] of kuski) {
+      if (a < poz) continue; // два правила на одну строку — метка первого, более строгого
+      html += `${esc(tekst.slice(poz, a))}<mark class="sv-${u}">${esc(tekst.slice(a, b))}</mark>`;
+      poz = b;
+    }
+    dd.innerHTML = html + esc(tekst.slice(poz));
+  });
+}
+function prichina(h) {
+  let gde = '';
+  if (h.gde) {
+    const [a, b] = kusok(SL[h.gde.pole], h.gde.i);
+    const dt = document.querySelector(`.karta [data-pole="${h.gde.pole}"]`).previousElementSibling.textContent;
+    gde = `<span class="sv-gde">${esc(dt)}: «${esc(SL[h.gde.pole].slice(a, b))}»</span>`;
+  }
+  const ssylki = (h.ssylki || []).map((s) => ` <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.nazvanie)}</a>`).join('');
+  return `<li class="sv-${h.uroven}"><b>${h.uroven === 'podhodit' ? 'По показаниям' : UROVNI[h.uroven]}.</b> ${esc(h.pochemu)}${gde}<span class="sv-ist">Источник: ${esc(h.istochnik)}${ssylki}</span></li>`;
+}
+const svetHtml = (s, j) => `<button class="svet" data-j="${j}" aria-expanded="false" aria-controls="sv-${j}">${s.metki.map((u) => `<span class="sv sv-${u}">${UROVNI[u]}</span>`).join('')}<span class="sv-str">почему</span></button>
+  <div class="sv-pr" id="sv-${j}" hidden>${s.hity.length ? `<ul>${s.hity.map(prichina).join('')}</ul>`
+    : '<p>Для этого варианта и болезней пациента правил в светофоре нет — проверь сам по инструкции.</p>'}</div>`;
 
 // ---------- Выбор случая ----------
 function obnovitVybor() {
