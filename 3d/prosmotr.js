@@ -61,11 +61,12 @@ export const SLUCHAI = {
   10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
   11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11' },
-  12: { porazh: 'porazh_12', skryt: ['zub_47'] },
-  13: { obekty: ['zub_36'], porazh: 'porazh_13' },
+  // 12, 13, 16: нижние жевательные зубы сверху закрыты верхними — верхняя челюсть в «прозрачно» насквозь
+  12: { porazh: 'porazh_12', skryt: ['zub_47'], naskvoz: VERHNYAYA_CHELYUST },
+  13: { obekty: ['zub_36'], porazh: 'porazh_13', naskvoz: VERHNYAYA_CHELYUST },
   14: { obekty: ['guba_verh_vnutr'], porazh: 'porazh_14' },
   15: { obekty: ['guba_niz_kayma'], porazh: 'porazh_15' },
-  16: { obekty: ['zub_46'], porazh: 'porazh_16' },
+  16: { obekty: ['zub_46'], porazh: 'porazh_16', naskvoz: VERHNYAYA_CHELYUST },
   // как в 1: язык сверху закрыт верхними зубами, не подсвечиваем — на оранжевом белый налёт теряется
   17: { porazh: 'porazh_17', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST },
 };
@@ -170,7 +171,9 @@ export class Prosmotr {
   /** В режиме «прозрачно» часть рисуется в два прохода: сначала только глубина, потом цвет
    *  ближайшего слоя. Так сквозь губы и щёки просвечивает один слой и кожа везде одного тона. */
   sGlubinoy(m) {
-    const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side }));
+    // transparent — в общий прозрачный проход после накладок с прозрачным краем (renderOrder 0), иначе глубина губы
+    // закроет их раньше, чем они нарисуются
+    const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side, transparent: true, depthWrite: true }));
     glubina.renderOrder = 5;
     glubina.visible = false;
     glubina.raycast = () => {};
