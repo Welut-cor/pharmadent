@@ -56,10 +56,18 @@ export const SLUCHAI = {
   6: { porazh: 'porazh_06', tkani: [{ chasti: SLIZISTAYA, umnozhit: [0.97, 0.9, 0.9], sherohovatost: 0.85 }] },
   7: { obekty: ['yazyk'], porazh: 'porazh_07' },
   8: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_08' },
+  9: { obekty: ['zub_38'], porazh: 'porazh_09' },
   // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
   10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
   11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11' },
+  12: { porazh: 'porazh_12', skryt: ['zub_47'] },
+  13: { obekty: ['zub_36'], porazh: 'porazh_13' },
+  14: { obekty: ['guba_verh_vnutr'], porazh: 'porazh_14' },
+  15: { obekty: ['guba_niz_kayma'], porazh: 'porazh_15' },
+  16: { obekty: ['zub_46'], porazh: 'porazh_16' },
+  // как в 1: язык сверху закрыт верхними зубами, не подсвечиваем — на оранжевом белый налёт теряется
+  17: { porazh: 'porazh_17', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST },
 };
 
 /** Средняя нормаль поверхностей объектов в мировых координатах (куда «смотрит» поражение). */
