@@ -40,6 +40,7 @@ export function nazvanie(imya) {
 // tkani — изменить вид слизистой: [{ chasti, umnozhit: [r, g, b], sherohovatost, gladko }];
 // chasti — имена или префиксы частей (у накладок porazh_ меняется только цвет), gladko — без рельефа;
 // napr — откуда смотреть на поражения [x, y, z] (y — вверх, z — к зрителю), если они разбросаны по рту;
+// blizhe — доля обычной дальности камеры, если поражение мелкое, а накладки раскиданы широко;
 // naskvoz — какие части в режиме «прозрачно» тоже насквозь, как губы и щёки (закрывают поражение).
 // нёбо тоже: непрозрачное, оно складками закрывает спинку языка при взгляде сверху
 const VERHNYAYA_CHELYUST = ['desna_verh', 'nebo', ...[1, 2].flatMap((k) => [1, 2, 3, 4, 5, 6, 7].map((n) => `zub_${k}${n}`))];
@@ -60,7 +61,8 @@ export const SLUCHAI = {
   // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
   10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
-  11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11' },
+  // 11: валик и сосочки в пару миллиметров — с дальности обеих челюстей их не отличить от здоровой десны
+  11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11', napr: [0, 0, 1], blizhe: 0.6 },
   // 12, 13, 16: нижние жевательные зубы сверху закрыты верхними — верхняя челюсть в «прозрачно» насквозь
   12: { porazh: 'porazh_12', skryt: ['zub_47'], naskvoz: VERHNYAYA_CHELYUST },
   13: { obekty: ['zub_36'], porazh: 'porazh_13', naskvoz: VERHNYAYA_CHELYUST },
@@ -196,8 +198,9 @@ export class Prosmotr {
 
   /** Показать случай: подсветить части obekty, включить накладки с префиксом porazh, спрятать части skryt,
    *  включить формы formy, изменить вид тканей tkani и навести камеру. */
-  pokazat({ obekty = [], porazh = '', skryt = [], formy = [], tkani = [], napr = null, naskvoz = [] } = {}) {
+  pokazat({ obekty = [], porazh = '', skryt = [], formy = [], tkani = [], napr = null, blizhe = 1, naskvoz = [] } = {}) {
     this.napr = napr;
+    this.blizhe = blizhe;
     this.naskvoz = naskvoz;
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
     // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
@@ -329,7 +332,7 @@ export class Prosmotr {
     if (n.dot(VPERED) > 0.2) nap.addScaledVector(n, 1.5);
     if (this.napr) nap.set(...this.napr);
     nap.normalize();
-    const d = THREE.MathUtils.clamp(this.dalnost(Math.max(s.radius, 0.012) * 2.3), 0.11, 0.3);
+    const d = THREE.MathUtils.clamp(this.dalnost(Math.max(s.radius, 0.012) * 2.3) * this.blizhe, 0.11, 0.3);
     this.letet(s.center.clone().addScaledVector(nap, d), s.center.clone());
   }
 

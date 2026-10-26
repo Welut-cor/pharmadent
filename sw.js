@@ -8,13 +8,13 @@ const ZHDAT = 4000;
 self.window = self;
 importScripts('data/sluchai.js');
 const FAYLY = [
-  './', 'index.html', 'sluchay.html', 'tema.js', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js', 'models/polost_rta.glb',
+  './', 'index.html', 'sluchay.html', 'tema.js', 'telo.js', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js', 'models/polost_rta.glb',
   'vendor/three/three.module.js', 'vendor/three/three.core.js',
   'vendor/three/addons/loaders/GLTFLoader.js', 'vendor/three/addons/controls/OrbitControls.js',
   'vendor/three/addons/utils/BufferGeometryUtils.js', 'vendor/three/addons/utils/SkeletonUtils.js',
   'vendor/shrifty/shrifty.css', 'vendor/shrifty/golos-kirillica.woff2', 'vendor/shrifty/golos-latinica.woff2',
   'vendor/shrifty/unbounded-kirillica.woff2', 'vendor/shrifty/unbounded-latinica.woff2',
-  ...self.SLUCHAI_DANNYE.sluchai.map((s) => `kartinki/sluchay-${s.nomer}.webp`),
+  ...self.SLUCHAI_DANNYE.sluchai.filter((s) => s.razdel === 'stomat').map((s) => `kartinki/sluchay-${s.kl}.webp`),
 ];
 
 const bezPoiska = (url) => url.split(/[?#]/)[0]; // ?v=… для проверки свежести — тот же файл

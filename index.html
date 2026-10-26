@@ -7,8 +7,8 @@
 <meta name="description" content="Тренажёр для студентов-стоматологов: виртуальный пациент, 3D-модель полости рта и выбор препарата с учётом сопутствующих болезней.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e66'/%3E%3Cpath d='M9 9c2-2 5-1 7 0 2-1 5-2 7 0 2 3 0 7-1 10l-1 5c0 2-2 2-2 0l-1-4c0-1-2-1-2 0l-1 4c0 2-2 2-2 0l-1-5c-1-3-3-7-1-10z' fill='%23fff'/%3E%3C/svg%3E">
 <script>
-// Старые ссылки на случай вели сюда: index.html#3 → sluchay.html#3
-if (/^#\d+$/.test(location.hash)) location.replace('sluchay.html' + location.hash);
+// Старые ссылки на случай вели сюда: index.html#3 → sluchay.html#3 (терапия — #t1…)
+if (/^#t?\d+$/.test(location.hash)) location.replace('sluchay.html' + location.hash);
 </script>
 <script src="tema.js"></script>
 <link rel="stylesheet" href="vendor/shrifty/shrifty.css">
@@ -18,6 +18,7 @@ if (/^#\d+$/.test(location.hash)) location.replace('sluchay.html' + location.has
   --bg:#f3f6f6; --card:#ffffff; --ink:#14232b; --muted:#5b6b72; --line:#d6e0e1;
   --accent:#0b6e66; --accent-soft:#dff0ee; --stage:#e9eff0;
   --ok:#1f7a3f; --ok-soft:#e2f3e7; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --telo:#e6d6ce; --volosy:#a88676; --organ:#d9737c;
   --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
   --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
@@ -25,11 +26,13 @@ if (/^#\d+$/.test(location.hash)) location.replace('sluchay.html' + location.has
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f1719; --card:#162125; --ink:#e4eef0; --muted:#97a8ae; --line:#2a3a3f;
   --accent:#4fc2b5; --accent-soft:#173a37; --stage:#1b2a2e;
-  --ok:#6fd08f; --ok-soft:#173222; --bad:#ff8a80; --bad-soft:#3d1c1a; color-scheme:dark}}
+  --ok:#6fd08f; --ok-soft:#173222; --bad:#ff8a80; --bad-soft:#3d1c1a;
+  --telo:#2f4247; --volosy:#4d6770; --organ:#e3858d; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1719; --card:#162125; --ink:#e4eef0; --muted:#97a8ae; --line:#2a3a3f;
   --accent:#4fc2b5; --accent-soft:#173a37; --stage:#1b2a2e;
-  --ok:#6fd08f; --ok-soft:#173222; --bad:#ff8a80; --bad-soft:#3d1c1a; color-scheme:dark}
+  --ok:#6fd08f; --ok-soft:#173222; --bad:#ff8a80; --bad-soft:#3d1c1a;
+  --telo:#2f4247; --volosy:#4d6770; --organ:#e3858d; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
@@ -96,6 +99,12 @@ section{margin-top:40px}
 /* случаи */
 .sluchai-zag{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .sluchai-zag span{color:var(--muted);font-size:14px}
+.razdely{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:0 0 14px;max-width:100%}
+.razdely button{font:inherit;font-weight:600;color:var(--muted);background:var(--card);border:0;padding:10px 14px;min-height:44px;cursor:pointer}
+.razdely button+button{border-left:1px solid var(--line)}
+.razdely button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.razdely button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.razdely b{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .setka{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);margin:0;padding:0;list-style:none}
 @media (min-width:600px){.setka{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:960px){.setka{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -103,7 +112,7 @@ section{margin-top:40px}
   overflow:hidden;color:inherit;text-decoration:none;transition:border-color .15s,transform .15s}
 .kartochka:hover{border-color:var(--accent);transform:translateY(-2px)}
 .kartochka .kadr{aspect-ratio:4/3;background:radial-gradient(120% 90% at 50% 35%,var(--card),var(--stage));border-bottom:1px solid var(--line)}
-.kartochka .kadr img{width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
+.kartochka .kadr img,.kartochka .kadr svg{width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
 .kartochka .tekst{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .kartochka h3{font-family:var(--f-display);font-weight:500;font-size:16px;line-height:1.3;margin:0;text-wrap:balance}
 .kartochka .pacient{margin:0;font-size:14px;color:var(--muted)}
@@ -137,7 +146,7 @@ section{margin-top:40px}
         </div>
         <ul class="fakty">
           <li><b id="chislo">7</b> клинических случаев</li>
-          <li>3D-модель полости рта</li>
+          <li>стоматология в 3D и терапия</li>
           <li>разбор каждого варианта</li>
         </ul>
       </div>
@@ -152,7 +161,7 @@ section{margin-top:40px}
       <h2 class="h2" id="kak">Как проходит случай</h2>
       <ol class="shagi">
         <li><h3>Карта пациента</h3><p>Возраст, хронические болезни, лекарства, которые он уже принимает, жалобы и данные осмотра.</p></li>
-        <li><h3>Осмотр в 3D</h3><p>Крути модель пальцем. Кольцо показывает, где поражение, а режим «Прозрачно» — что скрыто за губами и щеками.</p></li>
+        <li><h3>Осмотр в 3D</h3><p>Крути модель пальцем. Кольцо показывает, где поражение, а режим «Прозрачно» — что скрыто за губами и щеками. В терапии вместо 3D — схема тела.</p></li>
         <li><h3>Выбор препарата</h3><p>Четыре варианта в случайном порядке. После ответа — разбор каждого и индивидуальный подход к этому пациенту.</p></li>
       </ol>
     </section>
@@ -174,6 +183,10 @@ section{margin-top:40px}
         <h2 class="h2" id="sl-zag">Случаи</h2>
         <span id="sl-podpis"></span>
       </div>
+      <div class="razdely" role="group" aria-label="Раздел">
+        <button data-razdel="stomat" aria-pressed="true">Стоматология · <b></b></button>
+        <button data-razdel="terapiya" aria-pressed="false">Терапия · <b></b></button>
+      </div>
       <ul class="setka" id="setka"></ul>
     </section>
   </main>
@@ -184,28 +197,31 @@ section{margin-top:40px}
 </div>
 
 <script src="data/sluchai.js"></script>
+<script src="telo.js"></script>
 <script>
 // Карточки строятся из тех же данных, что и тест: новый случай в sluchai.js появится здесь сам.
-// Кадр 3D — kartinki/sluchay-N.webp (tools/kartinki_sluchaev.js); нет кадра — карточка без картинки.
+// Стоматология: кадр 3D — kartinki/sluchay-N.webp (tools/kartinki_sluchaev.js), нет кадра — карточка без картинки.
+// Терапия: схема тела из telo.js прямо в разметке. Номера у разделов совпадают — ссылки по ключу kl.
 const VSE = window.SLUCHAI_DANNYE.sluchai;
+const STOMAT = VSE.filter((s) => s.razdel === 'stomat');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const bolezni = (s) => s.hronicheskie.replace(/\.\s*$/, '').split(/,\s*/).filter(Boolean);
+const bolezni = (s) => s.hronicheskie.replace(/\.\s*$/, '').split(/,\s*/).filter((b) => b && !/^(отсутствуют|не отмечает)$/.test(b));
 const sklon = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'клинический случай'
   : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'клинических случая' : 'клинических случаев');
 
 document.getElementById('chislo').textContent = VSE.length;
 document.getElementById('chislo').nextSibling.textContent = ' ' + sklon(VSE.length);
-document.getElementById('nachat').href = 'sluchay.html#' + VSE[0].nomer;
+document.getElementById('nachat').href = 'sluchay.html#' + VSE[0].kl;
 document.getElementById('sl-podpis').textContent = 'Нажми на случай, чтобы открыть его';
 
-// Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему.
+// Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему (только стоматология — кадры 3D).
 // Пауза, пока курсор или фокус на кадре и пока вкладка скрыта; при «уменьшить движение» кадр не меняется.
 const SMENA = 12500;
 const scena = document.getElementById('scena');
 const podpis = scena.querySelector('figcaption');
 const kadry = [...scena.querySelectorAll('img')];
 let vidim = 0;
-let tek = VSE.findIndex((s) => s.nomer === 3);
+let tek = STOMAT.findIndex((s) => s.nomer === 3);
 
 function podpisat(s) {
   document.getElementById('scena-zag').textContent = `Случай ${s.nomer}. ${s.nazvanie}`;
@@ -213,10 +229,10 @@ function podpisat(s) {
 }
 
 async function dalshe() {
-  tek = (tek + 1) % VSE.length;
-  const s = VSE[tek];
+  tek = (tek + 1) % STOMAT.length;
+  const s = STOMAT[tek];
   const sled = kadry[1 - vidim];
-  sled.src = `kartinki/sluchay-${s.nomer}.webp`;
+  sled.src = `kartinki/sluchay-${s.kl}.webp`;
   try {
     await sled.decode(); // меняем, только когда кадр загружен; нет кадра — случай пропускаем
   } catch {
@@ -236,28 +252,47 @@ async function dalshe() {
 
 if (tek < 0) podpis.hidden = true;
 else {
-  podpisat(VSE[tek]);
+  podpisat(STOMAT[tek]);
   let pauza = false;
   scena.addEventListener('mouseenter', () => { pauza = true; });
   scena.addEventListener('mouseleave', () => { pauza = false; });
   scena.addEventListener('focusin', () => { pauza = true; });
   scena.addEventListener('focusout', () => { pauza = false; });
-  if (VSE.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (STOMAT.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     setInterval(() => { if (!pauza && !document.hidden) dalshe(); }, SMENA);
   }
 }
 
-document.getElementById('setka').innerHTML = VSE.map((s) => `
-  <li><a class="kartochka" href="sluchay.html#${s.nomer}">
-    <div class="kadr"><img src="kartinki/sluchay-${s.nomer}.webp" alt="" loading="lazy" width="720" height="820" onerror="this.parentNode.hidden=true"></div>
+const kadr = (s) => (s.razdel === 'terapiya'
+  ? `<div class="kadr" aria-hidden="true">${telo(s.organ, { pol: s.pol, krupno: 4 / 3 })}</div>`
+  : `<div class="kadr"><img src="kartinki/sluchay-${s.kl}.webp" alt="" loading="lazy" width="720" height="820" onerror="this.parentNode.hidden=true"></div>`);
+const kartochki = (razdel) => VSE.filter((s) => s.razdel === razdel).map((s) => `
+  <li><a class="kartochka" href="sluchay.html#${s.kl}">
+    ${kadr(s)}
     <div class="tekst">
-      <div class="eyebrow">Случай ${s.nomer}</div>
+      <div class="eyebrow">${s.razdel === 'terapiya' ? 'Терапия · ' : ''}Случай ${s.nomer}</div>
       <h3>${esc(s.nazvanie)}</h3>
       <p class="pacient cap">${esc(s.pacient)}</p>
       <ul class="metki" aria-label="Хронические заболевания">${bolezni(s).map((b) => `<li class="cap">${esc(b)}</li>`).join('')}</ul>
       <span class="otkryt">Открыть случай →</span>
     </div>
   </a></li>`).join('');
+
+// Переключатель разделов: по умолчанию стоматология; #terapiya в адресе открывает терапию
+const knopki = [...document.querySelectorAll('[data-razdel]')];
+function pokazatRazdel(razdel) {
+  knopki.forEach((b) => b.setAttribute('aria-pressed', b.dataset.razdel === razdel));
+  document.getElementById('setka').innerHTML = kartochki(razdel);
+}
+knopki.forEach((b) => {
+  b.querySelector('b').textContent = VSE.filter((s) => s.razdel === b.dataset.razdel).length;
+  b.addEventListener('click', () => {
+    pokazatRazdel(b.dataset.razdel);
+    history.replaceState(null, '', b.dataset.razdel === 'terapiya' ? '#terapiya' : location.pathname);
+  });
+});
+pokazatRazdel(location.hash === '#terapiya' ? 'terapiya' : 'stomat');
+if (location.hash === '#terapiya') document.getElementById('sluchai').scrollIntoView(); // со страницы случая терапии
 
 // Кэш для работы без сети (sw.js): с первого захода с интернетом сайт открывается и офлайн
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js');

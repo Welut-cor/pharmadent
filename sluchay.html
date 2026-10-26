@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ФармаДент</title>
-<meta name="description" content="Тренажёр для студентов-стоматологов: виртуальный пациент, 3D-модель полости рта и выбор препарата с учётом сопутствующих болезней.">
+<meta name="description" content="Тренажёр для студентов-стоматологов: виртуальные пациенты стоматолога и терапевта, осмотр в 3D и выбор препарата с учётом сопутствующих болезней.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e66'/%3E%3Cpath d='M9 9c2-2 5-1 7 0 2-1 5-2 7 0 2 3 0 7-1 10l-1 5c0 2-2 2-2 0l-1-4c0-1-2-1-2 0l-1 4c0 2-2 2-2 0l-1-5c-1-3-3-7-1-10z' fill='%23fff'/%3E%3C/svg%3E">
 <script src="tema.js"></script>
 <link rel="stylesheet" href="vendor/shrifty/shrifty.css">
@@ -15,6 +15,7 @@
   --bg:#f3f6f6; --card:#ffffff; --ink:#14232b; --muted:#5b6b72; --line:#d6e0e1;
   --accent:#0b6e66; --accent-soft:#dff0ee; --stage:#e9eff0;
   --ok:#1f7a3f; --ok-soft:#e2f3e7; --warn:#a86500; --warn-soft:#fbefd9; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --telo:#e6d6ce; --volosy:#a88676; --organ:#d9737c;
   --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
   --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:ui-monospace,"Cascadia Mono",Consolas,monospace;
@@ -22,11 +23,13 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0f1719; --card:#162125; --ink:#e4eef0; --muted:#97a8ae; --line:#2a3a3f;
   --accent:#4fc2b5; --accent-soft:#173a37; --stage:#1b2a2e;
-  --ok:#6fd08f; --ok-soft:#173222; --warn:#f0b65a; --warn-soft:#3a2c14; --bad:#ff8a80; --bad-soft:#3d1c1a; color-scheme:dark}}
+  --ok:#6fd08f; --ok-soft:#173222; --warn:#f0b65a; --warn-soft:#3a2c14; --bad:#ff8a80; --bad-soft:#3d1c1a;
+  --telo:#2f4247; --volosy:#4d6770; --organ:#e3858d; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0f1719; --card:#162125; --ink:#e4eef0; --muted:#97a8ae; --line:#2a3a3f;
   --accent:#4fc2b5; --accent-soft:#173a37; --stage:#1b2a2e;
-  --ok:#6fd08f; --ok-soft:#173222; --warn:#f0b65a; --warn-soft:#3a2c14; --bad:#ff8a80; --bad-soft:#3d1c1a; color-scheme:dark}
+  --ok:#6fd08f; --ok-soft:#173222; --warn:#f0b65a; --warn-soft:#3a2c14; --bad:#ff8a80; --bad-soft:#3d1c1a;
+  --telo:#2f4247; --volosy:#4d6770; --organ:#e3858d; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
@@ -79,6 +82,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .panel .knopka[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 .panel [hidden]{display:none}
 .podpis{margin:10px 0 0;color:var(--muted);font-size:14px;min-height:1.5em}
+/* терапия: вместо 3D схема тела (telo.js) на том же месте; страницу можно листать пальцем поверх неё */
+.telo-scena{touch-action:auto;padding:12px}
+.telo-scena svg{display:block;width:100%;height:100%}
 
 @media (min-width:960px){
   .grid{grid-template-columns:minmax(0,11fr) minmax(0,9fr);grid-template-rows:auto 1fr;
@@ -181,7 +187,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 <body>
 <div class="wrap">
   <header>
-    <h1>ФармаДент<small>Виртуальный пациент: осмотри полость рта в 3D и подбери препарат с учётом его болезней</small></h1>
+    <h1>ФармаДент<small>Виртуальный пациент: изучи карту и подбери препарат с учётом его болезней</small></h1>
     <div class="shapka-pravo">
       <a class="domoy" href="index.html">← Все случаи</a>
       <button class="tema" id="tema" aria-label="Тема"></button>
@@ -227,6 +233,11 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
       <p class="podpis" id="podpis">Кольцо — место поражения. Крути модель пальцем; нажми на часть рта — покажу, что это.</p>
     </section>
 
+    <section class="card model-card" id="telo-card" aria-label="Схема тела" hidden>
+      <div class="model telo-scena" id="telo"></div>
+      <p class="podpis" id="telo-podpis"></p>
+    </section>
+
     <section class="card zadanie" id="p-test" role="tabpanel" aria-labelledby="tab-test"></section>
 
     <section class="card zadanie" id="p-ii" role="tabpanel" aria-labelledby="tab-ii" hidden>
@@ -252,13 +263,19 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 
 <script src="data/sluchai.js"></script>
 <script src="data/svetofor.js"></script>
+<script src="telo.js"></script>
 <script>
 // Тест и «Найди ошибку ИИ» — обычный скрипт: работают и с диска, где 3D не грузится.
+// Два раздела: стоматология (3D) и терапия (схема тела). Номера у разделов совпадают (11–17 есть в обоих),
+// поэтому случай везде берётся по ключу kl: «1»…«17» и «t1»…«t11» (tools/sobrat_sluchai.py).
+// Счёт, «случай N из M», стрелки и «следующий случай» — внутри раздела открытого случая.
 const $ = (s) => document.querySelector(s);
 const BUKVY = 'АБВГ';
 const VSE = window.SLUCHAI_DANNYE.sluchai;
+const RAZDELY = { stomat: 'Стоматология', terapiya: 'Терапия' };
 let SL = VSE[0];
-const otvety = {}; // номер случая → { poryadok, i, verno }: к отвеченному случаю можно вернуться
+const razdel = () => VSE.filter((s) => s.razdel === SL.razdel);
+const otvety = {}; // ключ случая → { poryadok, i, verno }: к отвеченному случаю можно вернуться
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const abzacy = (s) => s.split(/\n\s*\n/).map((p) => `<p class="cap">${esc(p.trim())}</p>`).join('');
 const plavno = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
@@ -274,10 +291,10 @@ function peremeshat(a) {
   return a;
 }
 function nachatTest() {
-  const o = otvety[SL.nomer];
+  const o = otvety[SL.kl];
   poryadok = o ? o.poryadok : peremeshat(SL.varianty);
   $('#p-test').innerHTML = `
-    <div class="eyebrow">Случай ${VSE.indexOf(SL) + 1} из ${VSE.length}</div>
+    <div class="eyebrow">${RAZDELY[SL.razdel]} · ${razdel().indexOf(SL) + 1} из ${razdel().length}</div>
     <p class="q cap">${esc(SL.vopros)}</p>
     <div class="opts">${poryadok.map((v, i) => `<button class="opt" data-i="${i}"><span class="k">${BUKVY[i]}</span><span class="cap">${esc(v.tekst)}</span></button>`).join('')}</div>
     <div id="razbor" aria-live="polite"></div>`;
@@ -286,18 +303,23 @@ function nachatTest() {
   if (o) vybrat(o.i);
 }
 function schet() {
-  const vse = Object.values(otvety);
+  const vse = razdel().map((s) => otvety[s.kl]).filter(Boolean);
   return { verno: vse.filter((o) => o.verno).length, vsego: vse.length };
 }
+// Светофор пока только у стоматологии: правила в data/svetofor.json — про стоматологические препараты,
+// у терапии почти каждый вариант получил бы «Правил нет»
+const SV_ZDES = () => SV && SL.razdel === 'stomat';
 function vybrat(i) {
   const iV = poryadok.findIndex((v) => v.bukva === SL.pravilnyy);
   const verno = i === iV;
-  otvety[SL.nomer] = { poryadok, i, verno };
+  otvety[SL.kl] = { poryadok, i, verno };
   obnovitVybor();
   zamokII();
   const { verno: v, vsego } = schet();
-  const konec = vsego === VSE.length;
-  const sled = VSE[VSE.indexOf(SL) + 1];
+  const R = razdel();
+  const konec = vsego === R.length;
+  const sled = R[R.indexOf(SL) + 1];
+  const SV = SV_ZDES() ? window.SVETOFOR : null;
   document.querySelectorAll('#p-test .opt').forEach((b, j) => {
     b.disabled = true;
     if (j === iV) b.classList.add('good');
@@ -312,8 +334,8 @@ function vybrat(i) {
     ${poryadok.map((v, j) => `<div class="fb ${j === iV ? 'good' : j === i ? 'badc' : ''}"><strong>${BUKVY[j]}. ${esc(v.tekst)}${metka(j)}</strong>${SV ? svetHtml(svet[j], j) : ''}<p class="cap">${esc(v.obyasnenie)}</p></div>`).join('')}
     ${SV ? `<p class="src">${esc(SV.status)}</p>` : ''}
     <section class="podhod"><h2 class="h">Индивидуальный подход</h2>${abzacy(SL.podhod)}</section>
-    <div class="schet"><b>${v} из ${vsego}</b><span>${konec ? `верных ответов — пройдены все ${VSE.length} случаев.`
-      : `верных ответов; отвечено ${vsego} из ${VSE.length} случаев.`}</span></div>
+    <div class="schet"><b>${v} из ${vsego}</b><span>${konec ? `верных ответов — пройдены все ${R.length} случаев раздела «${RAZDELY[SL.razdel]}».`
+      : `верных ответов; отвечено ${vsego} из ${R.length} случаев раздела «${RAZDELY[SL.razdel]}».`}</span></div>
     <div class="actions">
       ${sled ? '<button class="btn" id="dalshe">Следующий случай</button>' : ''}
       <button class="btn ghost" id="zanovo">Ответить заново</button>
@@ -329,12 +351,12 @@ function vybrat(i) {
     podsvetitKartu(vkl ? svet[+b.dataset.j].hity : []);
   }));
   const knopka = (id, f) => { const b = $(id); if (b) b.onclick = f; };
-  knopka('#dalshe', () => { otkryt(sled.nomer); pokazatNachalo($('.karta')); });
-  knopka('#zanovo', () => { delete otvety[SL.nomer]; obnovitVybor(); nachatTest(); nachatII(); zamokII(); pokazatNachalo($('#p-test')); });
+  knopka('#dalshe', () => { otkryt(sled.kl); pokazatNachalo($('.karta')); });
+  knopka('#zanovo', () => { delete otvety[SL.kl]; obnovitVybor(); nachatTest(); nachatII(); zamokII(); pokazatNachalo($('#p-test')); });
   knopka('#k-ii', () => vkladka('ii'));
   knopka('#vse-zanovo', () => {
-    for (const n in otvety) delete otvety[n];
-    otkryt(VSE[0].nomer);
+    for (const s of R) delete otvety[s.kl];
+    otkryt(R[0].kl);
     pokazatNachalo($('.karta'));
   });
 }
@@ -352,7 +374,7 @@ function svetofor(v) {
   const gruppy = SV.gruppy.filter((g) => g.est.some((a) => [].concat(a).every((k) => t.includes(norm(k))))).map((g) => g.id);
   const sost = {}; // состояние → где оно в карте
   for (const s of SV.sostoyaniya) {
-    const pole = norm(SL[s.pole]);
+    const pole = norm(SL[s.pole] || '');
     for (const k of s.est) {
       const i = pole.indexOf(norm(k));
       if (i >= 0) { sost[s.id] = { pole: s.pole, i }; break; }
@@ -375,7 +397,7 @@ function kusok(tekst, i) {
 }
 function podsvetitKartu(hity) {
   document.querySelectorAll('.karta [data-pole]').forEach((dd) => {
-    const tekst = SL[dd.dataset.pole];
+    const tekst = SL[dd.dataset.pole] || '';
     const kuski = hity.filter((h) => h.gde && h.gde.pole === dd.dataset.pole)
       .map((h) => [...kusok(tekst, h.gde.i), h.uroven]).sort((x, y) => x[0] - y[0]);
     let html = '', poz = 0;
@@ -403,35 +425,54 @@ const svetHtml = (s, j) => `<button class="svet" data-j="${j}" aria-expanded="fa
 
 // ---------- Выбор случая ----------
 function obnovitVybor() {
-  $('#sluchay').innerHTML = VSE.map((s) => {
-    const o = otvety[s.nomer];
-    return `<option value="${s.nomer}">Случай ${s.nomer}. ${esc(s.nazvanie)}${o ? (o.verno ? ' — верно' : ' — неверно') : ''}</option>`;
-  }).join('');
-  $('#sluchay').value = SL.nomer;
-  const k = VSE.indexOf(SL);
+  $('#sluchay').innerHTML = Object.entries(RAZDELY).map(([r, imya]) => `<optgroup label="${imya}">${VSE.filter((s) => s.razdel === r).map((s) => {
+    const o = otvety[s.kl];
+    return `<option value="${s.kl}">Случай ${s.nomer}. ${esc(s.nazvanie)}${o ? (o.verno ? ' — верно' : ' — неверно') : ''}</option>`;
+  }).join('')}</optgroup>`).join('');
+  $('#sluchay').value = SL.kl;
+  const R = razdel();
+  const k = R.indexOf(SL);
   $('#pred').disabled = k === 0;
-  $('#sled').disabled = k === VSE.length - 1;
+  $('#sled').disabled = k === R.length - 1;
   const { verno, vsego } = schet();
-  $('#schet-mini').textContent = vsego ? `Верно ${verno} из ${vsego}` : `${VSE.length} случаев`;
+  $('#schet-mini').textContent = vsego ? `Верно ${verno} из ${vsego}` : `${RAZDELY[SL.razdel]}: ${R.length} случаев`;
 }
-function otkryt(nomer) {
-  SL = VSE.find((s) => s.nomer === nomer) || VSE[0];
+// Подпись под схемой тела: у крови кольца нет — цветом показано, что затронуто
+const TELO_PODPIS = {
+  krov: 'Схема тела: болезнь крови — затронуты сосуды по всему телу.',
+  b12: 'Схема тела: дефицит B12 затрагивает кровь (бледные сосуды) и нервную систему — головной и спинной мозг.',
+};
+function pokazatSchemu() {
+  const terapiya = SL.razdel === 'terapiya';
+  $('.model-card').hidden = terapiya;
+  $('#telo-card').hidden = !terapiya;
+  $('.domoy').href = terapiya ? 'index.html#terapiya' : 'index.html';
+  if (!terapiya) return;
+  $('#telo').innerHTML = telo(SL.organ, { pol: SL.pol, podpis: `Схема тела: ${SL.nazvanie}` });
+  $('#telo-podpis').textContent = TELO_PODPIS[SL.organ] || 'Схема тела: кольцо — где болезнь.';
+}
+function otkryt(kl) {
+  SL = VSE.find((s) => s.kl === kl) || VSE[0];
   $('#k-pacient').textContent = SL.pacient;
-  document.querySelectorAll('[data-pole]').forEach((dd) => { dd.textContent = SL[dd.dataset.pole]; });
-  II = OSHIBKI_II[SL.nomer] || [];
+  document.querySelectorAll('[data-pole]').forEach((dd) => {
+    dd.textContent = SL[dd.dataset.pole] || '';
+    dd.parentElement.hidden = !SL[dd.dataset.pole]; // у терапии нет лекарств и данных осмотра — строки скрыты
+  });
+  pokazatSchemu();
+  II = OSHIBKI_II[SL.kl] || [];
   $('#tab-ii').hidden = !II.length;
   if (!II.length && $('#p-test').hidden) vkladka('test');
   obnovitVybor();
   nachatTest();
   nachatII();
   zamokII();
-  history.replaceState(null, '', '#' + SL.nomer);
-  window.tekNomer = SL.nomer; // 3D подхватит при загрузке
-  document.dispatchEvent(new CustomEvent('sluchay', { detail: SL.nomer }));
+  history.replaceState(null, '', '#' + SL.kl);
+  window.tekNomer = SL.kl; // 3D подхватит при загрузке
+  document.dispatchEvent(new CustomEvent('sluchay', { detail: SL.kl }));
 }
-$('#sluchay').onchange = (e) => otkryt(+e.target.value);
-$('#pred').onclick = () => otkryt(VSE[VSE.indexOf(SL) - 1].nomer);
-$('#sled').onclick = () => otkryt(VSE[VSE.indexOf(SL) + 1].nomer);
+$('#sluchay').onchange = (e) => otkryt(e.target.value);
+$('#pred').onclick = () => otkryt(razdel()[razdel().indexOf(SL) - 1].kl);
+$('#sled').onclick = () => otkryt(razdel()[razdel().indexOf(SL) + 1].kl);
 
 // ---------- Найди ошибку ИИ ----------
 // В демо ответ «ИИ» составлен по тексту случая: ошибки — неверные варианты из data/*.json (err — буква варианта),
@@ -628,12 +669,12 @@ $('#ii-proverit').onclick = () => {
     ${II.map((l, i) => (l.err ? `<div class="fb ${otmecheny.has(i) ? 'good' : 'badc'}"><strong>Строка ${i + 1} — ${otmecheny.has(i) ? 'найдено' : 'пропущено'}</strong><p class="cap">${esc(pochemu(l.err))}</p></div>`
       : otmecheny.has(i) ? `<div class="fb"><strong>Строка ${i + 1} — ошибки нет</strong></div>` : '')).join('')}
     <section class="podhod"><h2 class="h">Как правильно</h2>${abzacy(SL.podhod.split(/\n\s*\n/)[0])}</section>
-    <p class="src">Вывод для студента: ${esc(VYVOD_II[SL.nomer] || 'ИИ отвечает уверенно и тогда, когда ошибается. Проверяй каждое назначение сам.')}</p>`;
+    <p class="src">Вывод для студента: ${esc(VYVOD_II[SL.kl] || 'ИИ отвечает уверенно и тогда, когда ошибается. Проверяй каждое назначение сам.')}</p>`;
 };
 $('#ii-zanovo').onclick = nachatII;
 // Ошибки ИИ — это неверные варианты теста, а разбор называет верный препарат: до ответа на тест задание закрыто
 function zamokII() {
-  const otkryto = !!otvety[SL.nomer];
+  const otkryto = !!otvety[SL.kl];
   $('#ii-zamok').hidden = otkryto;
   $('#ii-telo').hidden = !otkryto;
 }
@@ -666,7 +707,7 @@ VKLADKI.forEach((b, i) => {
   });
 });
 
-otkryt(+location.hash.slice(1) || VSE[0].nomer);
+otkryt(decodeURIComponent(location.hash.slice(1)) || VSE[0].kl);
 if (location.protocol === 'file:') {
   $('#model').dataset.tekst = '3D не открывается с диска. Запусти в папке site: python -m http.server — и открой http://localhost:8000';
 } else if ('serviceWorker' in navigator) {
@@ -678,44 +719,55 @@ if (location.protocol === 'file:') {
 {"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}
 </script>
 <script type="module">
-import { Prosmotr, SLUCHAI, nazvanie } from './3d/prosmotr.js';
-
+// 3D грузится при первом случае стоматологии: у терапии схема тела, модель и three.js ей не нужны
 const el = document.getElementById('model');
 const podpis = document.getElementById('podpis');
 const PODSKAZKA = podpis.textContent;
+const stomat = (kl) => /^\d+$/.test(kl);
 
-try {
-  const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
-  delete el.dataset.tekst;
-  p.rezhim('prozrachno');
-  const podsv = document.getElementById('podsvetka');
-  const pokazat = (nomer) => {
-    p.pokazat(SLUCHAI[nomer] || {});
-    podsv.hidden = !p.zona.length; // в случае без подсвеченных частей кнопке нечего выключать
-    podpis.textContent = PODSKAZKA;
-  };
-  pokazat(window.tekNomer);
-  document.addEventListener('sluchay', (e) => pokazat(e.detail));
+let zapushcheno = false;
+const zhdat = (e) => { if (stomat(e.detail)) { document.removeEventListener('sluchay', zhdat); zapustit(); } };
+if (stomat(window.tekNomer)) zapustit();
+else document.addEventListener('sluchay', zhdat);
 
-  p.onVybor = (imya) => { podpis.textContent = imya ? nazvanie(imya) : PODSKAZKA; };
-  for (const b of document.querySelectorAll('[data-rezhim]')) {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('[data-rezhim]').forEach((x) => x.setAttribute('aria-pressed', x === b));
-      p.rezhim(b.dataset.rezhim);
+async function zapustit() {
+  if (zapushcheno || location.protocol === 'file:') return;
+  zapushcheno = true;
+  try {
+    const { Prosmotr, SLUCHAI, nazvanie } = await import('./3d/prosmotr.js');
+    const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
+    delete el.dataset.tekst;
+    p.rezhim('prozrachno');
+    const podsv = document.getElementById('podsvetka');
+    const pokazat = (kl) => {
+      if (!stomat(kl)) return;
+      p.pokazat(SLUCHAI[kl] || {});
+      podsv.hidden = !p.zona.length; // в случае без подсвеченных частей кнопке нечего выключать
+      podpis.textContent = PODSKAZKA;
+    };
+    pokazat(window.tekNomer);
+    document.addEventListener('sluchay', (e) => pokazat(e.detail));
+
+    p.onVybor = (imya) => { podpis.textContent = imya ? nazvanie(imya) : PODSKAZKA; };
+    for (const b of document.querySelectorAll('[data-rezhim]')) {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('[data-rezhim]').forEach((x) => x.setAttribute('aria-pressed', x === b));
+        p.rezhim(b.dataset.rezhim);
+      });
+    }
+    document.getElementById('k-zone').addEventListener('click', () => p.kZone());
+    document.getElementById('obzor').addEventListener('click', () => p.obzor());
+    podsv.addEventListener('click', () => {
+      const vkl = podsv.getAttribute('aria-pressed') !== 'true';
+      podsv.setAttribute('aria-pressed', vkl);
+      p.podsvetka(vkl);
     });
+    document.querySelectorAll('.panel button').forEach((b) => { b.disabled = false; });
+    window.prosmotr = p; // для проверки из консоли
+  } catch (e) {
+    console.error(e);
+    el.dataset.tekst = 'Не удалось загрузить 3D-модель.';
   }
-  document.getElementById('k-zone').addEventListener('click', () => p.kZone());
-  document.getElementById('obzor').addEventListener('click', () => p.obzor());
-  podsv.addEventListener('click', () => {
-    const vkl = podsv.getAttribute('aria-pressed') !== 'true';
-    podsv.setAttribute('aria-pressed', vkl);
-    p.podsvetka(vkl);
-  });
-  document.querySelectorAll('.panel button').forEach((b) => { b.disabled = false; });
-  window.prosmotr = p; // для проверки из консоли
-} catch (e) {
-  console.error(e);
-  el.dataset.tekst = 'Не удалось загрузить 3D-модель.';
 }
 </script>
 </body>
