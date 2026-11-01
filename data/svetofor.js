@@ -353,11 +353,10 @@ window.SVETOFOR = {
   },
   {
    "id": "b12_inekcii",
-   "nazvanie": "цианокобаламин в инъекциях",
+   "nazvanie": "цианокобаламин",
    "est": [
     [
-     "цианокобаламин",
-     "инъекц"
+     "цианокобаламин"
     ]
    ]
   },
@@ -414,6 +413,288 @@ window.SVETOFOR = {
     [
      "обсудить с лечащим врачом",
      "гигиен"
+    ]
+   ]
+  },
+  {
+   "id": "nitrofurantoin",
+   "nazvanie": "нитрофурантоин",
+   "est": [
+    [
+     "нитрофурантоин"
+    ]
+   ]
+  },
+  {
+   "id": "hinolon",
+   "nazvanie": "фторхинолон",
+   "est": [
+    [
+     "ципрофлоксацин"
+    ]
+   ]
+  },
+  {
+   "id": "sumatriptan",
+   "nazvanie": "суматриптан",
+   "est": [
+    [
+     "суматриптан"
+    ]
+   ]
+  },
+  {
+   "id": "itrakonazol",
+   "nazvanie": "итраконазол",
+   "est": [
+    [
+     "итраконазол"
+    ]
+   ]
+  },
+  {
+   "id": "aciklovir",
+   "nazvanie": "ацикловир",
+   "est": [
+    [
+     "ацикловир"
+    ]
+   ]
+  },
+  {
+   "id": "famciklovir",
+   "nazvanie": "фамцикловир",
+   "est": [
+    [
+     "фамцикловир"
+    ]
+   ]
+  },
+  {
+   "id": "antigistamin_vnutr",
+   "nazvanie": "блокаторы H1-рецепторов внутрь",
+   "est": [
+    [
+     "фексофенадин"
+    ],
+    [
+     "левоцетиризин"
+    ]
+   ]
+  },
+  {
+   "id": "budesonid_ingal",
+   "nazvanie": "будесонид ингаляционно",
+   "est": [
+    [
+     "будесонид",
+     "ингаляц"
+    ]
+   ]
+  },
+  {
+   "id": "gks_nazal",
+   "nazvanie": "глюкокортикостероиды в нос",
+   "est": [
+    [
+     "мометазон",
+     "назальн"
+    ],
+    [
+     "флутиказон",
+     "назальн"
+    ]
+   ]
+  },
+  {
+   "id": "salbutamol",
+   "nazvanie": "сальбутамол",
+   "est": [
+    [
+     "сальбутамол"
+    ]
+   ]
+  },
+  {
+   "id": "amlodipin",
+   "nazvanie": "амлодипин",
+   "est": [
+    [
+     "амлодипин"
+    ]
+   ]
+  },
+  {
+   "id": "formoterol",
+   "nazvanie": "формотерол",
+   "est": [
+    [
+     "формотерол"
+    ]
+   ]
+  },
+  {
+   "id": "salmeterol",
+   "nazvanie": "сальметерол",
+   "est": [
+    [
+     "сальметерол"
+    ]
+   ]
+  },
+  {
+   "id": "beklometazon",
+   "nazvanie": "беклометазон",
+   "est": [
+    [
+     "беклометазон"
+    ]
+   ]
+  },
+  {
+   "id": "zhelezo_sulfat",
+   "nazvanie": "сульфат железа",
+   "est": [
+    [
+     "сульфат железа"
+    ]
+   ]
+  },
+  {
+   "id": "teofillin",
+   "nazvanie": "теофиллин",
+   "est": [
+    [
+     "теофиллин"
+    ]
+   ]
+  },
+  {
+   "id": "ingibitor_apf",
+   "nazvanie": "ингибиторы АПФ",
+   "est": [
+    [
+     "лизиноприл"
+    ],
+    [
+     "периндоприл"
+    ]
+   ]
+  },
+  {
+   "id": "adrenalin",
+   "nazvanie": "адреналин",
+   "est": [
+    [
+     "адреналин"
+    ]
+   ]
+  },
+  {
+   "id": "sartan",
+   "nazvanie": "блокаторы рецепторов ангиотензина II",
+   "est": [
+    [
+     "лозартан"
+    ],
+    [
+     "валсартан"
+    ]
+   ]
+  },
+  {
+   "id": "hloropiramin",
+   "nazvanie": "хлоропирамин",
+   "est": [
+    [
+     "хлоропирамин"
+    ]
+   ]
+  },
+  {
+   "id": "glukoza_vnutr",
+   "nazvanie": "глюкоза внутрь",
+   "est": [
+    [
+     "пероральная глюкоза"
+    ]
+   ]
+  },
+  {
+   "id": "telmisartan",
+   "nazvanie": "телмисартан",
+   "est": [
+    [
+     "телмисартан"
+    ]
+   ]
+  },
+  {
+   "id": "beta_blok",
+   "nazvanie": "β-блокаторы",
+   "est": [
+    [
+     "бисопролол"
+    ],
+    [
+     "метопролол"
+    ]
+   ]
+  },
+  {
+   "id": "diuretik",
+   "nazvanie": "диуретики",
+   "est": [
+    [
+     "фуросемид"
+    ],
+    [
+     "спиронолактон"
+    ]
+   ]
+  },
+  {
+   "id": "antigipert_kozha",
+   "nazvanie": "препараты от давления",
+   "est": [
+    [
+     "нифедипин"
+    ],
+    [
+     "моксонидин"
+    ],
+    [
+     "клонидин"
+    ]
+   ]
+  },
+  {
+   "id": "makrogol",
+   "nazvanie": "макрогол",
+   "est": [
+    [
+     "макрогол"
+    ]
+   ]
+  },
+  {
+   "id": "insulin",
+   "nazvanie": "инсулин",
+   "est": [
+    [
+     "инсулин гларгин"
+    ],
+    [
+     "инсулин аспарт"
+    ]
+   ]
+  },
+  {
+   "id": "loperamid",
+   "nazvanie": "лоперамид",
+   "est": [
+    [
+     "лоперамид"
     ]
    ]
   }
@@ -622,6 +903,110 @@ window.SVETOFOR = {
    "pole": "diagnoz",
    "est": [
     "абсцесс"
+   ]
+  },
+  {
+   "id": "tsistit",
+   "nazvanie": "цистит",
+   "pole": "diagnoz",
+   "est": [
+    "цистит"
+   ]
+  },
+  {
+   "id": "migren",
+   "nazvanie": "приступ мигрени",
+   "pole": "diagnoz",
+   "est": [
+    "приступ мигрени"
+   ]
+  },
+  {
+   "id": "pnevmoniya",
+   "nazvanie": "внебольничная пневмония",
+   "pole": "diagnoz",
+   "est": [
+    "пневмони"
+   ]
+  },
+  {
+   "id": "astma_diag",
+   "nazvanie": "бронхиальная астма — диагноз случая",
+   "pole": "diagnoz",
+   "est": [
+    "бронхиальная астма"
+   ]
+  },
+  {
+   "id": "ag_diag",
+   "nazvanie": "артериальная гипертензия — диагноз случая",
+   "pole": "diagnoz",
+   "est": [
+    "артериальная гипертензия"
+   ]
+  },
+  {
+   "id": "zhda",
+   "nazvanie": "железодефицитная анемия",
+   "pole": "diagnoz",
+   "est": [
+    "железодефицитная анемия"
+   ]
+  },
+  {
+   "id": "anafilaksiya",
+   "nazvanie": "анафилаксия",
+   "pole": "diagnoz",
+   "est": [
+    "анафилакс"
+   ]
+  },
+  {
+   "id": "gipotenziya",
+   "nazvanie": "резкое снижение давления",
+   "pole": "zhaloby",
+   "est": [
+    "снижение артериального давления"
+   ]
+  },
+  {
+   "id": "gipoglikemiya",
+   "nazvanie": "гипогликемия",
+   "pole": "diagnoz",
+   "est": [
+    "гипогликеми"
+   ]
+  },
+  {
+   "id": "onemenie",
+   "nazvanie": "онемение и покалывание",
+   "pole": "zhaloby",
+   "est": [
+    "онемение"
+   ]
+  },
+  {
+   "id": "dermatofitiya",
+   "nazvanie": "дерматофития",
+   "pole": "diagnoz",
+   "est": [
+    "дерматофити"
+   ]
+  },
+  {
+   "id": "zapor",
+   "nazvanie": "запор",
+   "pole": "diagnoz",
+   "est": [
+    "запор"
+   ]
+  },
+  {
+   "id": "zamest",
+   "nazvanie": "заместительная терапия",
+   "pole": "hronicheskie",
+   "est": [
+    "заместительную терапию"
    ]
   }
  ],
@@ -1079,7 +1464,17 @@ window.SVETOFOR = {
    "sostoyanie": "defitsit_b12",
    "uroven": "podhodit",
    "pochemu": "Форма витамина B12; при нарушенном всасывании парентеральное введение обходит желудочно-кишечный этап.",
-   "istochnik": "случай 10, разбор варианта «Цианокобаламин в форме инъекционного раствора»"
+   "istochnik": "случай 10, разбор варианта «Цианокобаламин в форме инъекционного раствора»; терапия, «Дефицит витамина B12», разбор варианта «Цианокобаламин»",
+   "ssylki": [
+    {
+     "url": "https://diseases.medelement.com/disease/%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD-%D0%B212-%D0%B4%D0%B5%D1%84%D0%B8%D1%86%D0%B8%D1%82%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D0%B5%D0%BC%D0%B8%D1%8F-%D0%BA%D1%80-%D1%80%D1%84-2024/18352",
+     "nazvanie": "КР Минздрава РФ «Витамин-В12-дефицитная анемия», 2024, раздел 3; копия MedElement"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/tsianokobalamin_24590/",
+     "nazvanie": "medi.ru: Цианокобаламин (БЗМП), раствор для инъекций: российская инструкция"
+    }
+   ]
   },
   {
    "gruppa": "zhelezo",
@@ -1157,6 +1552,624 @@ window.SVETOFOR = {
    "uroven": "ostorozhno",
    "pochemu": "Могут ухудшать контроль артериального давления.",
    "istochnik": "случай 11, разбор варианта «Назначить системный глюкокортикостероид»"
+  },
+  {
+   "gruppa": "nitrofurantoin",
+   "sostoyanie": "tsistit",
+   "uroven": "podhodit",
+   "pochemu": "Рекомендован при остром неосложнённом цистите. Перед назначением уточняют беременность и функцию почек.",
+   "istochnik": "терапия, «Неосложнённый цистит», разбор варианта «Нитрофурантоин»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/furadonin_24238/",
+     "nazvanie": "medi.ru: Фурадонин, таблетки (Фармвилар): российская инструкция"
+    },
+    {
+     "url": "https://disuria.ru/load/0-0-0-1494-20",
+     "nazvanie": "КР Минздрава РФ «Цистит у женщин», 2024, раздел 3.1; копия текста"
+    }
+   ]
+  },
+  {
+   "gruppa": "flukonazol_sist",
+   "sostoyanie": "tsistit",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Противогрибковое средство: не действует на бактерий — типичных возбудителей цистита.",
+   "istochnik": "терапия, «Неосложнённый цистит», разбор варианта «Флуконазол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/flukonazol_26235/",
+     "nazvanie": "medi.ru: Флуконазол, таблетки (Розфарм): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "klotrimazol",
+   "sostoyanie": "tsistit",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Местное противогрибковое средство: бактериальный цистит не лечит.",
+   "istochnik": "терапия, «Неосложнённый цистит», разбор варианта «Клотримазол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/klotrimazol-krem_1639/",
+     "nazvanie": "medi.ru: Клотримазол, крем (ГлаксоСмитКляйн): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "hinolon",
+   "sostoyanie": "tsistit",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Антибиотик активен, но при неосложнённом цистите препараты этой группы не рекомендуют: устойчивость возбудителей и серьёзные нежелательные реакции.",
+   "istochnik": "терапия, «Неосложнённый цистит», разбор варианта «Ципрофлоксацин»",
+   "ssylki": [
+    {
+     "url": "https://disuria.ru/load/0-0-0-1494-20",
+     "nazvanie": "КР Минздрава РФ «Цистит у женщин», 2024, раздел 3.1; копия текста"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/tsiprofloksatsin_24676/",
+     "nazvanie": "medi.ru: Ципрофлоксацин (Синтез): инструкция, фармакотерапевтическая группа"
+    }
+   ]
+  },
+  {
+   "gruppa": "sumatriptan",
+   "sostoyanie": "migren",
+   "uroven": "podhodit",
+   "pochemu": "Предназначен для купирования приступа мигрени. Сосудистых противопоказаний в карте нет.",
+   "istochnik": "терапия, «Мигрень», разбор варианта «Суматриптан»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/sumatriptan_23453/",
+     "nazvanie": "medi.ru: Суматриптан (Вертекс): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "itrakonazol",
+   "sostoyanie": "migren",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Противогрибковое средство: приступ мигрени не купирует.",
+   "istochnik": "терапия, «Мигрень», разбор варианта «Итраконазол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/itrakonazol_7419/",
+     "nazvanie": "medi.ru: Итраконазол, капсулы (Биоком): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "aciklovir",
+   "sostoyanie": "migren",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Действует на герпесвирусы: приступ мигрени не купирует.",
+   "istochnik": "терапия, «Мигрень», разбор варианта «Ацикловир»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/atsiklovir-akos_25316/",
+     "nazvanie": "medi.ru: Ацикловир-АКОС, таблетки: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "famciklovir",
+   "sostoyanie": "migren",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Применяется при герпесвирусных инфекциях: приступ мигрени не купирует.",
+   "istochnik": "терапия, «Мигрень», разбор варианта «Фамцикловир»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/famvir_945/",
+     "nazvanie": "medi.ru: Фамвир (фамцикловир): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "amoksicillin",
+   "sostoyanie": "pnevmoniya",
+   "uroven": "podhodit",
+   "pochemu": "Препарат выбора при нетяжёлой внебольничной пневмонии у амбулаторного пациента без значимых сопутствующих болезней. Перед назначением уточняют аллергию на бета-лактамы и тяжесть болезни.",
+   "istochnik": "терапия, «Внебольничная бактериальная пневмония», разбор варианта «Амоксициллин»",
+   "ssylki": [
+    {
+     "url": "https://bazanpa.ru/minzdrav-rossii-klinicheskie-rekomendatsii-ot01012024-h6601279/",
+     "nazvanie": "КР Минздрава РФ «Внебольничная пневмония у взрослых», 2024, раздел 3.1.1 и приложение А3.1; копия База НПА"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/flemoksin-solyutab_5317/",
+     "nazvanie": "medi.ru: Флемоксин Солютаб (амоксициллин): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "antigistamin_vnutr",
+   "sostoyanie": "pnevmoniya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Противоаллергическое средство: бактериальную пневмонию не лечит и антибиотик не заменяет.",
+   "istochnik": "терапия, «Внебольничная бактериальная пневмония», разбор варианта «Фексофенадин»; терапия, «Внебольничная бактериальная пневмония», разбор варианта «Левоцетиризин»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/feksadin_10791/",
+     "nazvanie": "medi.ru: Фексадин (фексофенадин): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/levotsetirizin-verteks_20742/",
+     "nazvanie": "medi.ru: Левоцетиризин-Вертекс: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "doksiciklin",
+   "sostoyanie": "pnevmoniya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Активен против микоплазм и хламидий, но из-за устойчивости пневмококка не считается препаратом выбора для эмпирической терапии.",
+   "istochnik": "терапия, «Внебольничная бактериальная пневмония», разбор варианта «Доксициклин»",
+   "ssylki": [
+    {
+     "url": "https://bazanpa.ru/minzdrav-rossii-klinicheskie-rekomendatsii-ot01012024-h6601279/",
+     "nazvanie": "КР Минздрава РФ «Внебольничная пневмония у взрослых», 2024, раздел 3.1.1 и приложение А3.1; копия База НПА"
+    }
+   ]
+  },
+  {
+   "gruppa": "budesonid_ingal",
+   "sostoyanie": "astma_diag",
+   "uroven": "podhodit",
+   "pochemu": "Ингаляционный глюкокортикостероид: уменьшает воспаление в бронхах, это базисная терапия астмы. Для немедленного купирования приступа не применяют.",
+   "istochnik": "терапия, «Бронхиальная астма», разбор варианта «Будесонид ингаляционно»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/pulmikort-suspenziya-dlya-nebulajzera_8352/",
+     "nazvanie": "medi.ru: Пульмикорт, суспензия для ингаляций (будесонид): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "gks_nazal",
+   "sostoyanie": "astma_diag",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Назальная форма действует в носу и не заменяет ингаляционную базисную терапию астмы.",
+   "istochnik": "терапия, «Бронхиальная астма», разбор варианта «Мометазон назальный»; терапия, «Бронхиальная астма», разбор варианта «Флутиказон назальный»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/mometazon-sandoz_25993/",
+     "nazvanie": "medi.ru: Мометазон Сандоз, назальный спрей: инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/fliksonaze_7531/",
+     "nazvanie": "medi.ru: Фликсоназе (флутиказон), назальный спрей: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "salbutamol",
+   "sostoyanie": "astma_diag",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Быстро расширяет бронхи, но воспаление не подавляет: это бронхолитик, а не ингаляционное противовоспалительное средство.",
+   "istochnik": "терапия, «Бронхиальная астма», разбор варианта «Сальбутамол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/salbutamol-farmstandart-vch_23162/",
+     "nazvanie": "medi.ru: Сальбутамол-Фармстандарт ВЧ: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "amlodipin",
+   "sostoyanie": "ag_diag",
+   "uroven": "podhodit",
+   "pochemu": "Блокатор кальциевых каналов для длительного лечения артериальной гипертензии. Противопоказаний в карте нет.",
+   "istochnik": "терапия, «Артериальная гипертензия», разбор варианта «Амлодипин»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/amlodipin_17600/",
+     "nazvanie": "medi.ru: Амлодипин (Марбиофарм): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "formoterol",
+   "sostoyanie": "ag_diag",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Средство от бронхоспазма: гипертензию не лечит.",
+   "istochnik": "терапия, «Артериальная гипертензия», разбор варианта «Формотерол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/formoterol-eyr_17050/",
+     "nazvanie": "medi.ru: Формотерол Эйр: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "salmeterol",
+   "sostoyanie": "ag_diag",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Расширяет бронхи: гипертензию не лечит.",
+   "istochnik": "терапия, «Артериальная гипертензия», разбор варианта «Сальметерол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/serevent_6241/",
+     "nazvanie": "medi.ru: Серевент (салметерол): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "salmeterol",
+   "sostoyanie": "ag",
+   "uroven": "ostorozhno",
+   "pochemu": "При сердечно-сосудистых заболеваниях — с осторожностью: может повышать давление и учащать пульс.",
+   "istochnik": "терапия, «Артериальная гипертензия», разбор варианта «Сальметерол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/serevent_6241/",
+     "nazvanie": "medi.ru: Серевент (салметерол): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "beklometazon",
+   "sostoyanie": "ag_diag",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Противовоспалительное средство при астме: гипертензию не лечит.",
+   "istochnik": "терапия, «Артериальная гипертензия», разбор варианта «Беклометазон»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/beklometazon_18018/",
+     "nazvanie": "medi.ru: Беклометазон (Биннофарм), ингаляционный аэрозоль: инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "zhelezo_sulfat",
+   "sostoyanie": "zhda",
+   "uroven": "podhodit",
+   "pochemu": "Восполняет железо при подтверждённом дефиците. Обильные менструации — не противопоказание, но их причину ищут отдельно.",
+   "istochnik": "терапия, «Железодефицитная анемия», разбор варианта «Сульфат железа»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/sorbifer-durules_10914/",
+     "nazvanie": "medi.ru: Сорбифер Дурулес (железа сульфат + аскорбиновая кислота): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "teofillin",
+   "sostoyanie": "zhda",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Средство при бронхообструкции: железо не восполняет.",
+   "istochnik": "терапия, «Железодефицитная анемия», разбор варианта «Теофиллин»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/teopek_7058/",
+     "nazvanie": "medi.ru: Теопэк (теофиллин): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "ingibitor_apf",
+   "sostoyanie": "zhda",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Снижает давление: железо не восполняет, показаний к нему в карте нет.",
+   "istochnik": "терапия, «Железодефицитная анемия», разбор варианта «Лизиноприл»; терапия, «Железодефицитная анемия», разбор варианта «Периндоприл»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/lizinopril_20817/",
+     "nazvanie": "medi.ru: Лизиноприл (Оксфорд лабораториз): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/perindopril_26048/",
+     "nazvanie": "medi.ru: Периндоприл (Изварино фарма): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "adrenalin",
+   "sostoyanie": "anafilaksiya",
+   "uroven": "podhodit",
+   "pochemu": "Первоначальная терапия анафилаксии: внутримышечно и без промедления. Сезонный аллергический ринит этому не мешает.",
+   "istochnik": "терапия, «Анафилаксия», разбор варианта «Адреналин внутримышечно»",
+   "ssylki": [
+    {
+     "url": "https://apicr.minzdrav.gov.ru/api.ashx?id=263_2&op=GetClinrecPdf",
+     "nazvanie": "КР Минздрава РФ «Анафилактический шок», 2025, рекомендации 12, 13, 25; официальный PDF"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/adrenalin_17237/",
+     "nazvanie": "medi.ru: Адреналин (Московский эндокринный завод), раствор для инъекций: российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "sartan",
+   "sostoyanie": "anafilaksiya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Не купирует анафилаксию и не заменяет адреналин.",
+   "istochnik": "терапия, «Анафилаксия», разбор варианта «Лозартан»; терапия, «Анафилаксия», разбор варианта «Валсартан»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/lozartan_20925/",
+     "nazvanie": "medi.ru: Лозартан (Пранафарм): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/valsartan_18586/",
+     "nazvanie": "medi.ru: Валсартан (Озон): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "sartan",
+   "sostoyanie": "gipotenziya",
+   "uroven": "konflikt",
+   "pochemu": "Снижает давление, а у пациента оно уже резко упало.",
+   "istochnik": "терапия, «Анафилаксия», разбор варианта «Лозартан»; терапия, «Анафилаксия», разбор варианта «Валсартан»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/lozartan_20925/",
+     "nazvanie": "medi.ru: Лозартан (Пранафарм): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/valsartan_18586/",
+     "nazvanie": "medi.ru: Валсартан (Озон): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "hloropiramin",
+   "sostoyanie": "anafilaksiya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Первым вводят адреналин. Антигистаминные — только после стабилизации давления, если остаются проявления на коже и слизистых.",
+   "istochnik": "терапия, «Анафилаксия», разбор варианта «Хлоропирамин («Супрастин»)»",
+   "ssylki": [
+    {
+     "url": "https://apicr.minzdrav.gov.ru/api.ashx?id=263_2&op=GetClinrecPdf",
+     "nazvanie": "КР Минздрава РФ «Анафилактический шок», 2025, рекомендации 12, 13, 25; официальный PDF"
+    }
+   ]
+  },
+  {
+   "gruppa": "hloropiramin",
+   "sostoyanie": "gipotenziya",
+   "uroven": "ostorozhno",
+   "pochemu": "Быстрое внутривенное введение антигистаминных может усугубить гипотензию.",
+   "istochnik": "терапия, «Анафилаксия», разбор варианта «Хлоропирамин («Супрастин»)»",
+   "ssylki": [
+    {
+     "url": "https://apicr.minzdrav.gov.ru/api.ashx?id=263_2&op=GetClinrecPdf",
+     "nazvanie": "КР Минздрава РФ «Анафилактический шок», 2025, рекомендации 12, 13, 25; официальный PDF"
+    }
+   ]
+  },
+  {
+   "gruppa": "glukoza_vnutr",
+   "sostoyanie": "gipoglikemiya",
+   "uroven": "podhodit",
+   "pochemu": "Если пациент в сознании и безопасно глотает — быстрые углеводы внутрь. При потере сознания в рот ничего не вливают из-за опасности асфиксии: нужна экстренная помощь.",
+   "istochnik": "терапия, «Гипогликемия», разбор варианта «Пероральная глюкоза при сохранённом сознании и безопасном глотании; экстренная помощь при нарушении сознания или невозможности глотать»",
+   "ssylki": [
+    {
+     "url": "https://aintermed.com/klinrek/endokrinologiya/kr286",
+     "nazvanie": "КР Минздрава РФ «Сахарный диабет 1 типа у взрослых», 2025, редакция, размещённая 02.03.2026; копия AInterMed"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/glyukoza_19103/",
+     "nazvanie": "medi.ru: Глюкоза, таблетки (Фармстандарт): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "telmisartan",
+   "sostoyanie": "gipoglikemiya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Снижает давление: низкую глюкозу не повышает.",
+   "istochnik": "терапия, «Гипогликемия», разбор варианта «Телмисартан»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/telmisartan-shtada_23564/",
+     "nazvanie": "medi.ru: Телмисартан ШТАДА: инструкция, особые указания"
+    }
+   ]
+  },
+  {
+   "gruppa": "telmisartan",
+   "sostoyanie": "diabet",
+   "uroven": "ostorozhno",
+   "pochemu": "У пациентов на инсулине на фоне телмисартана может развиться гипогликемия: нужен контроль глюкозы.",
+   "istochnik": "терапия, «Гипогликемия», разбор варианта «Телмисартан»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/telmisartan-shtada_23564/",
+     "nazvanie": "medi.ru: Телмисартан ШТАДА: инструкция, особые указания"
+    }
+   ]
+  },
+  {
+   "gruppa": "beta_blok",
+   "sostoyanie": "gipoglikemiya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Снижает частоту сердечных сокращений: низкую глюкозу не повышает.",
+   "istochnik": "терапия, «Гипогликемия», разбор варианта «Бисопролол»; терапия, «Гипогликемия», разбор варианта «Метопролол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/bisoprolol_18184/",
+     "nazvanie": "medi.ru: Бисопролол (БЗМП): инструкция, раздел «С осторожностью»"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/metoprolol_21337/",
+     "nazvanie": "medi.ru: Метопролол, таблетки (Московский эндокринный завод): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "beta_blok",
+   "sostoyanie": "diabet",
+   "uroven": "ostorozhno",
+   "pochemu": "Может маскировать симптомы гипогликемии, в том числе тахикардию.",
+   "istochnik": "терапия, «Гипогликемия», разбор варианта «Бисопролол»; терапия, «Гипогликемия», разбор варианта «Метопролол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/bisoprolol_18184/",
+     "nazvanie": "medi.ru: Бисопролол (БЗМП): инструкция, раздел «С осторожностью»"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/metoprolol_21337/",
+     "nazvanie": "medi.ru: Метопролол, таблетки (Московский эндокринный завод): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "diuretik",
+   "sostoyanie": "defitsit_b12",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Мочегонное средство: витамин B12 не восполняет.",
+   "istochnik": "терапия, «Дефицит витамина B12», разбор варианта «Фуросемид»; терапия, «Дефицит витамина B12», разбор варианта «Спиронолактон»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/furosemid_24278/",
+     "nazvanie": "medi.ru: Фуросемид, таблетки (Обновление): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/spironolakton_23351/",
+     "nazvanie": "medi.ru: Спиронолактон (Пранафарм): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "folievaya",
+   "sostoyanie": "onemenie",
+   "uroven": "ostorozhno",
+   "pochemu": "При неврологических жалобах ею нельзя подменять витамин B12. Пока не исключена B12-дефицитная анемия, дозы выше 0,1 мг/сут не рекомендуются.",
+   "istochnik": "терапия, «Дефицит витамина B12», разбор варианта «Фолиевая кислота»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/folievaya-kislota_24152/",
+     "nazvanie": "medi.ru: Фолиевая кислота (Марбиофарм): инструкция, противопоказания и особые указания"
+    },
+    {
+     "url": "https://diseases.medelement.com/disease/%D0%B2%D0%B8%D1%82%D0%B0%D0%BC%D0%B8%D0%BD-%D0%B212-%D0%B4%D0%B5%D1%84%D0%B8%D1%86%D0%B8%D1%82%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D0%B5%D0%BC%D0%B8%D1%8F-%D0%BA%D1%80-%D1%80%D1%84-2024/18352",
+     "nazvanie": "КР Минздрава РФ «Витамин-В12-дефицитная анемия», 2024, раздел 3; копия MedElement"
+    }
+   ]
+  },
+  {
+   "gruppa": "terbinafin",
+   "sostoyanie": "dermatofitiya",
+   "uroven": "podhodit",
+   "pochemu": "Крем показан при дерматофитном поражении гладкой кожи; ограниченный очаг соответствует показанию.",
+   "istochnik": "терапия, «Дерматофития гладкой кожи», разбор варианта «Тербинафин крем местно»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/terbinafin_23624/",
+     "nazvanie": "medi.ru: Тербинафин, крем (Вертекс): российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "antigipert_kozha",
+   "sostoyanie": "dermatofitiya",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Препарат для снижения давления: дерматофитию не лечит.",
+   "istochnik": "терапия, «Дерматофития гладкой кожи», разбор варианта «Нифедипин»; терапия, «Дерматофития гладкой кожи», разбор варианта «Моксонидин»; терапия, «Дерматофития гладкой кожи», разбор варианта «Клонидин»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/nifedipin_1735/",
+     "nazvanie": "medi.ru: Нифедипин: инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/moksonidin_25979/",
+     "nazvanie": "medi.ru: Моксонидин (Озон): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/klofelin_20582/",
+     "nazvanie": "medi.ru: Клофелин (клонидин), таблетки (Московский эндокринный завод): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "makrogol",
+   "sostoyanie": "zapor",
+   "uroven": "podhodit",
+   "pochemu": "Показан для симптоматического лечения запора. Признаков непроходимости в карте нет.",
+   "istochnik": "терапия, «Запор», разбор варианта «Макрогол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/forlaks_14845/",
+     "nazvanie": "medi.ru: Форлакс (макрогол), порошок для приёма внутрь: российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "makrogol",
+   "sostoyanie": "zamest",
+   "uroven": "ostorozhno",
+   "pochemu": "Может замедлять всасывание лекарств, принятых одновременно с ним: препарат заместительной терапии, если он принимается внутрь, разносят по времени.",
+   "istochnik": "терапия, «Запор», разбор варианта «Макрогол»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/forlaks_14845/",
+     "nazvanie": "medi.ru: Форлакс (макрогол), порошок для приёма внутрь: российская инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "insulin",
+   "sostoyanie": "zapor",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Снижает глюкозу: запор не лечит. Диабета в карте нет.",
+   "istochnik": "терапия, «Запор», разбор варианта «Инсулин гларгин»; терапия, «Запор», разбор варианта «Инсулин аспарт»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/lantus_5264/",
+     "nazvanie": "medi.ru: Лантус СолоСтар (инсулин гларгин): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/novorapid-penfill_6510/",
+     "nazvanie": "medi.ru: НовоРапид Пенфилл (инсулин аспарт): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "insulin",
+   "sostoyanie": "zapor",
+   "uroven": "ostorozhno",
+   "pochemu": "Без показаний может вызвать гипогликемию.",
+   "istochnik": "терапия, «Запор», разбор варианта «Инсулин гларгин»; терапия, «Запор», разбор варианта «Инсулин аспарт»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/lantus_5264/",
+     "nazvanie": "medi.ru: Лантус СолоСтар (инсулин гларгин): инструкция"
+    },
+    {
+     "url": "https://medi.ru/instrukciya/novorapid-penfill_6510/",
+     "nazvanie": "medi.ru: НовоРапид Пенфилл (инсулин аспарт): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "loperamid",
+   "sostoyanie": "zapor",
+   "uroven": "ne_po_pokaz",
+   "pochemu": "Средство от диареи: стул не размягчает.",
+   "istochnik": "терапия, «Запор», разбор варианта «Лоперамид»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/loperamid_20952/",
+     "nazvanie": "medi.ru: Лоперамид, капсулы (Производство медикаментов): инструкция"
+    }
+   ]
+  },
+  {
+   "gruppa": "loperamid",
+   "sostoyanie": "zapor",
+   "uroven": "konflikt",
+   "pochemu": "Замедляет движение содержимого кишечника. Если при лечении развивается запор, лоперамид отменяют.",
+   "istochnik": "терапия, «Запор», разбор варианта «Лоперамид»",
+   "ssylki": [
+    {
+     "url": "https://medi.ru/instrukciya/loperamid_20952/",
+     "nazvanie": "medi.ru: Лоперамид, капсулы (Производство медикаментов): инструкция"
+    }
+   ]
   }
  ]
 };

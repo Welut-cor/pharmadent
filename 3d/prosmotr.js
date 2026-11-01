@@ -346,7 +346,8 @@ export class Prosmotr {
 
   /** К следующему поражению по кругу, каждое крупным планом. Возвращает { nomer, vsego } или null. */
   kSleduyushchemu() {
-    if (this.porazheniya.length < 2 || this.formy.length) {
+    // сосочки десны (8) и валики (11) — десятки кусков одного поражения, их показывает общий вид
+    if (this.porazheniya.length < 2 || this.porazheniya.length > 6 || this.formy.length) {
       this.kZone();
       return null;
     }
