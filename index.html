@@ -7,13 +7,13 @@
 <meta name="description" content="Тренажёр для студентов-стоматологов: виртуальный пациент, 3D-модель полости рта и выбор препарата с учётом сопутствующих болезней.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b6e66'/%3E%3Cpath d='M9 9c2-2 5-1 7 0 2-1 5-2 7 0 2 3 0 7-1 10l-1 5c0 2-2 2-2 0l-1-4c0-1-2-1-2 0l-1 4c0 2-2 2-2 0l-1-5c-1-3-3-7-1-10z' fill='%23fff'/%3E%3C/svg%3E">
 <script>
-// Старые ссылки на случай вели сюда: index.html#3 → sluchay.html#3 (терапия — #t1…)
+// Старые ссылки на случай вели сюда: index.html#3 → sluchay.html#3 (терапия - #t1…)
 if (/^#t?\d+$/.test(location.hash)) location.replace('sluchay.html' + location.hash);
 </script>
 <script src="tema.js"></script>
 <link rel="stylesheet" href="vendor/shrifty/shrifty.css">
 <style>
-/* Главная: что это за тренажёр, как проходит случай, список случаев. Цвета и шрифты — как в sluchay.html. */
+/* Главная: что это за тренажёр, как проходит случай, список случаев. Цвета и шрифты - как в sluchay.html. */
 :root{
   --bg:#f3f6f6; --card:#ffffff; --ink:#14232b; --muted:#5b6b72; --line:#d6e0e1;
   --accent:#0b6e66; --accent-soft:#dff0ee; --stage:#e9eff0;
@@ -151,7 +151,7 @@ section{margin-top:40px}
         </ul>
       </div>
       <figure class="scena" id="scena" style="margin:0">
-        <img src="kartinki/sluchay-3.webp" alt="3D-модель полости рта: пузырьки и корочки на красной кайме верхней губы, вокруг — кольцо, отмечающее поражение" width="720" height="820">
+        <img src="kartinki/sluchay-3.webp" alt="3D-модель полости рта: пузырьки и корочки на красной кайме верхней губы, вокруг - кольцо, отмечающее поражение" width="720" height="820">
         <img class="skryt" alt="" aria-hidden="true" width="720" height="820">
         <figcaption><strong id="scena-zag">Случай 3</strong><span id="scena-pac"></span></figcaption>
       </figure>
@@ -161,20 +161,20 @@ section{margin-top:40px}
       <h2 class="h2" id="kak">Как проходит случай</h2>
       <ol class="shagi">
         <li><h3>Карта пациента</h3><p>Возраст, хронические болезни, лекарства, которые он уже принимает, жалобы и данные осмотра.</p></li>
-        <li><h3>Осмотр в 3D</h3><p>Крути модель пальцем. Кольцо показывает, где поражение, а режим «Прозрачно» — что скрыто за губами и щеками. В терапии вместо 3D — схема тела.</p></li>
-        <li><h3>Выбор препарата</h3><p>Четыре варианта в случайном порядке. После ответа — разбор каждого и индивидуальный подход к этому пациенту.</p></li>
+        <li><h3>Осмотр в 3D</h3><p>Крути модель пальцем. Кольцо показывает, где поражение, а режим «Прозрачно» - что скрыто за губами и щеками. В терапии вместо 3D - схема тела.</p></li>
+        <li><h3>Выбор препарата</h3><p>Четыре варианта в случайном порядке. После ответа - разбор каждого и индивидуальный подход к этому пациенту.</p></li>
       </ol>
     </section>
 
     <section class="ii" aria-labelledby="ii-zag">
       <div>
         <h2 class="h2" id="ii-zag">Найди ошибку ИИ</h2>
-        <p>ИИ-ассистент отвечает уверенно — и тогда, когда ошибается. В каждом случае есть его план лечения: отметь строки с ошибками, а разбор покажет, чем они опасны для этого пациента.</p>
+        <p>ИИ-ассистент отвечает уверенно - и тогда, когда ошибается. В каждом случае есть его план лечения: отметь строки с ошибками, а разбор покажет, чем они опасны для этого пациента.</p>
       </div>
       <div class="primer" aria-label="Пример из случая 2">
         <div class="shapka">Ответ ИИ-ассистента · случай 2</div>
-        <div class="stroka"><span class="n">2</span><span>Для уменьшения боли — бензидамин в форме раствора для местного применения.</span></div>
-        <div class="stroka hit"><span class="n">3</span><span>При сильной боли добавить кетопрофен в таблетках — он надёжнее снимет воспаление.<em>Ошибка найдена</em></span></div>
+        <div class="stroka"><span class="n">2</span><span>Для уменьшения боли - бензидамин в форме раствора для местного применения.</span></div>
+        <div class="stroka hit"><span class="n">3</span><span>При сильной боли добавить кетопрофен в таблетках - он надёжнее снимет воспаление.<em>Ошибка найдена</em></span></div>
       </div>
     </section>
 
@@ -200,8 +200,8 @@ section{margin-top:40px}
 <script src="telo.js"></script>
 <script>
 // Карточки строятся из тех же данных, что и тест: новый случай в sluchai.js появится здесь сам.
-// Стоматология: кадр 3D — kartinki/sluchay-N.webp (tools/kartinki_sluchaev.js), нет кадра — карточка без картинки.
-// Терапия: схема тела из telo.js прямо в разметке. Номера у разделов совпадают — ссылки по ключу kl.
+// Стоматология: кадр 3D - kartinki/sluchay-N.webp (tools/kartinki_sluchaev.js), нет кадра - карточка без картинки.
+// Терапия: схема тела из telo.js прямо в разметке. Номера у разделов совпадают - ссылки по ключу kl.
 const VSE = window.SLUCHAI_DANNYE.sluchai;
 const STOMAT = VSE.filter((s) => s.razdel === 'stomat');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -214,7 +214,7 @@ document.getElementById('chislo').nextSibling.textContent = ' ' + sklon(VSE.leng
 document.getElementById('nachat').href = 'sluchay.html#' + VSE[0].kl;
 document.getElementById('sl-podpis').textContent = 'Нажми на случай, чтобы открыть его';
 
-// Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему (только стоматология — кадры 3D).
+// Первый экран: начинаем со случая 3, каждые SMENA мс плавно переходим к следующему (только стоматология - кадры 3D).
 // Пауза, пока курсор или фокус на кадре и пока вкладка скрыта; при «уменьшить движение» кадр не меняется.
 const SMENA = 12500;
 const scena = document.getElementById('scena');
@@ -234,7 +234,7 @@ async function dalshe() {
   const sled = kadry[1 - vidim];
   sled.src = `kartinki/sluchay-${s.kl}.webp`;
   try {
-    await sled.decode(); // меняем, только когда кадр загружен; нет кадра — случай пропускаем
+    await sled.decode(); // меняем, только когда кадр загружен; нет кадра - случай пропускаем
   } catch {
     return;
   }

@@ -1,10 +1,10 @@
 // Кэш для работы без сети: на кафедре интернета может не быть.
 // При первом заходе с сетью сайт целиком (страницы, 3D-модель, three.js, шрифты, кадры случаев) ложится в кэш.
-// Дальше сначала сеть — правки видны сразу; сети нет или она дольше ZHDAT мс не отвечает — отдаём из кэша.
+// Дальше сначала сеть - правки видны сразу; сети нет или она дольше ZHDAT мс не отвечает - отдаём из кэша.
 const KESH = 'dentalis';
 const ZHDAT = 4000;
 
-// Кадры карточек — по номерам случаев из тех же данных, что у страниц: новый случай попадёт в кэш сам
+// Кадры карточек - по номерам случаев из тех же данных, что у страниц: новый случай попадёт в кэш сам
 self.window = self;
 importScripts('data/sluchai.js');
 const FAYLY = [
@@ -17,7 +17,7 @@ const FAYLY = [
   ...self.SLUCHAI_DANNYE.sluchai.filter((s) => s.razdel === 'stomat').map((s) => `kartinki/sluchay-${s.kl}.webp`),
 ];
 
-const bezPoiska = (url) => url.split(/[?#]/)[0]; // ?v=… для проверки свежести — тот же файл
+const bezPoiska = (url) => url.split(/[?#]/)[0]; // ?v=… для проверки свежести - тот же файл
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
@@ -33,7 +33,7 @@ self.addEventListener('fetch', (e) => {
   const klyuch = bezPoiska(z.url);
   const kesh = caches.open(KESH);
   const izSeti = fetch(z);
-  // свежий ответ — в кэш; копию снимаем сразу, пока страница не начала читать ответ
+  // свежий ответ - в кэш; копию снимаем сразу, пока страница не начала читать ответ
   e.waitUntil(izSeti.then((o) => {
     if (o.status !== 200) return;
     const kopiya = o.clone();

@@ -1,6 +1,6 @@
 // Просмотрщик модели полости рта: подсветка зоны случая, мишень на поражении,
 // режимы «обычно» и «прозрачно» (губы и щёки насквозь).
-// Имена частей — по разделу «3D: договорённость об именах» в CLAUDE.md.
+// Имена частей - по разделу «3D: договорённость об именах» в CLAUDE.md.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -16,7 +16,7 @@ const MUDROST = /^(zub|desna)_(\d8)$/;
 const GLOTKA_NIZ = -0.042;
 // Части, которые видны, только если случай назвал их в obekty.
 const PO_VYZOVU = ['protez'];
-// Слизистая целиком — для поля tkani (сухость при ксеростомии).
+// Слизистая целиком - для поля tkani (сухость при ксеростомии).
 export const SLIZISTAYA = ['desna_verh', 'desna_niz', 'yazyk', 'nebo', 'dno_rta', 'glotka',
   'shcheka_lev', 'shcheka_prav', 'guba_verh_vnutr', 'guba_niz_vnutr'];
 
@@ -25,7 +25,7 @@ const NAZVANIYA = {
   dno_rta: 'Дно полости рта', glotka: 'Глотка',
   shcheka_lev: 'Щека левая', shcheka_prav: 'Щека правая',
   guba_verh: 'Верхняя губа', guba_niz: 'Нижняя губа',
-  guba_verh_kayma: 'Верхняя губа — красная кайма', guba_niz_kayma: 'Нижняя губа — красная кайма',
+  guba_verh_kayma: 'Верхняя губа - красная кайма', guba_niz_kayma: 'Нижняя губа - красная кайма',
   guba_verh_vnutr: 'Верхняя губа изнутри', guba_niz_vnutr: 'Нижняя губа изнутри',
   protez: 'Съёмный протез',
 };
@@ -37,18 +37,18 @@ export function nazvanie(imya) {
   return NAZVANIYA[imya] || imya;
 }
 
-// Что показывать в случае (по «Данным осмотра»): obekty — подсвеченные части, porazh — префикс накладок,
-// skryt — спрятать части (удалённый зуб), formy — включить формы (отёк щеки: otyok_prav_niz),
-// tkani — изменить вид слизистой: [{ chasti, umnozhit: [r, g, b], sherohovatost, gladko }];
-// chasti — имена или префиксы частей (у накладок porazh_ меняется только цвет), gladko — без рельефа;
-// napr — откуда смотреть на поражения [x, y, z] (y — вверх, z — к зрителю), если они разбросаны по рту;
-// blizhe — доля обычной дальности камеры, если поражение мелкое, а накладки раскиданы широко;
-// naskvoz — какие части в режиме «прозрачно» тоже насквозь, как губы и щёки (закрывают поражение).
+// Что показывать в случае (по «Данным осмотра»): obekty - подсвеченные части, porazh - префикс накладок,
+// skryt - спрятать части (удалённый зуб), formy - включить формы (отёк щеки: otyok_prav_niz),
+// tkani - изменить вид слизистой: [{ chasti, umnozhit: [r, g, b], sherohovatost, gladko }];
+// chasti - имена или префиксы частей (у накладок porazh_ меняется только цвет), gladko - без рельефа;
+// napr - откуда смотреть на поражения [x, y, z] (y - вверх, z - к зрителю), если они разбросаны по рту;
+// blizhe - доля обычной дальности камеры, если поражение мелкое, а накладки раскиданы широко;
+// naskvoz - какие части в режиме «прозрачно» тоже насквозь, как губы и щёки (закрывают поражение).
 // нёбо тоже: непрозрачное, оно складками закрывает спинку языка при взгляде сверху
 const VERHNYAYA_CHELYUST = ['desna_verh', 'nebo', ...[1, 2].flatMap((k) => [1, 2, 3, 4, 5, 6, 7].map((n) => `zub_${k}${n}`))];
 export const SLUCHAI = {
-  // 1 и 4: поражения на обеих щеках — их нормали гасят друг друга, направление взгляда задано
-  // в 1 язык сверху закрыт верхними зубами — как в 10, верхняя челюсть в «прозрачно» насквозь;
+  // 1 и 4: поражения на обеих щеках - их нормали гасят друг друга, направление взгляда задано
+  // в 1 язык сверху закрыт верхними зубами - как в 10, верхняя челюсть в «прозрачно» насквозь;
   // язык не подсвечиваем: на оранжевом белый налёт теряется
   1: { obekty: ['shcheka_lev', 'shcheka_prav', 'nebo'], porazh: 'porazh_01', napr: [0, 0.6, 1],
     naskvoz: VERHNYAYA_CHELYUST },
@@ -63,15 +63,15 @@ export const SLUCHAI = {
   // язык не подсвечиваем: подсветка красит его в оранжевый и прячет малиновый «лакированный» цвет
   10: { porazh: 'porazh_10', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST,
     tkani: [{ chasti: ['yazyk', 'porazh_10_pyatno'], umnozhit: [1, 0.72, 0.72], sherohovatost: 0.15, gladko: true }] },
-  // 11: валик и сосочки в пару миллиметров — с дальности обеих челюстей их не отличить от здоровой десны
+  // 11: валик и сосочки в пару миллиметров - с дальности обеих челюстей их не отличить от здоровой десны
   11: { obekty: ['desna_verh', 'desna_niz'], porazh: 'porazh_11', napr: [0, 0, 1], blizhe: 0.6 },
-  // 12, 13, 16: нижние жевательные зубы сверху закрыты верхними — верхняя челюсть в «прозрачно» насквозь
+  // 12, 13, 16: нижние жевательные зубы сверху закрыты верхними - верхняя челюсть в «прозрачно» насквозь
   12: { porazh: 'porazh_12', skryt: ['zub_47'], naskvoz: VERHNYAYA_CHELYUST },
   13: { obekty: ['zub_36'], porazh: 'porazh_13', naskvoz: VERHNYAYA_CHELYUST },
   14: { obekty: ['guba_verh_vnutr'], porazh: 'porazh_14' },
   15: { obekty: ['guba_niz_kayma'], porazh: 'porazh_15' },
   16: { obekty: ['zub_46'], porazh: 'porazh_16', naskvoz: VERHNYAYA_CHELYUST },
-  // как в 1: язык сверху закрыт верхними зубами, не подсвечиваем — на оранжевом белый налёт теряется
+  // как в 1: язык сверху закрыт верхними зубами, не подсвечиваем - на оранжевом белый налёт теряется
   17: { porazh: 'porazh_17', napr: [0, 0.6, 1], naskvoz: VERHNYAYA_CHELYUST },
 };
 
@@ -122,7 +122,7 @@ export class Prosmotr {
     this.upr.enableDamping = true;
     this.upr.minDistance = 0.05;
     this.upr.maxDistance = 0.45;
-    // модель — вырезанный кусок головы: сверху, снизу и сзади видна изнанка, туда камеру не пускаем
+    // модель - вырезанный кусок головы: сверху, снизу и сзади видна изнанка, туда камеру не пускаем
     const grad = THREE.MathUtils.degToRad;
     Object.assign(this.upr, { minPolarAngle: grad(45), maxPolarAngle: grad(125), minAzimuthAngle: grad(-100), maxAzimuthAngle: grad(100) });
 
@@ -139,7 +139,7 @@ export class Prosmotr {
     this.ukazatel(r.domElement);
     new ResizeObserver(() => this.razmer()).observe(konteyner);
     this.razmer();
-    // модель за краем экрана или на скрытой вкладке не рисуем — бережём батарею телефона
+    // модель за краем экрана или на скрытой вкладке не рисуем - бережём батарею телефона
     new IntersectionObserver(([e]) => r.setAnimationLoop(e.isIntersecting ? (t) => this.kadr(t) : null)).observe(konteyner);
   }
 
@@ -154,7 +154,7 @@ export class Prosmotr {
     this.model.traverse((m) => m.isMesh && setki.push(m));
     for (const m of setki) {
       m.userData.chast = this.chastDlya(m);
-      m.material = m.material.clone(); // у каждой части свой материал — подсвечиваем по отдельности
+      m.material = m.material.clone(); // у каждой части свой материал - подсвечиваем по отдельности
       const mt = m.material;
       m.userData.ishodnik = { color: mt.color.clone(), roughness: mt.roughness, roughnessMap: mt.roughnessMap, normalMap: mt.normalMap };
       if (m.userData.chast.startsWith('porazh_')) {
@@ -178,14 +178,14 @@ export class Prosmotr {
   /** В режиме «прозрачно» часть рисуется в два прохода: сначала только глубина, потом цвет
    *  ближайшего слоя. Так сквозь губы и щёки просвечивает один слой и кожа везде одного тона. */
   sGlubinoy(m) {
-    // transparent — в общий прозрачный проход после накладок с прозрачным краем (renderOrder 0), иначе глубина губы
+    // transparent - в общий прозрачный проход после накладок с прозрачным краем (renderOrder 0), иначе глубина губы
     // закроет их раньше, чем они нарисуются
     const glubina = new THREE.Mesh(m.geometry, new THREE.MeshBasicMaterial({ colorWrite: false, side: m.material.side, transparent: true, depthWrite: true }));
     glubina.renderOrder = 5;
     glubina.visible = false;
     glubina.raycast = () => {};
     glubina.userData.sluzhebnyy = true;
-    if (m.morphTargetInfluences) glubina.morphTargetInfluences = m.morphTargetInfluences; // отёк — и в проходе глубины
+    if (m.morphTargetInfluences) glubina.morphTargetInfluences = m.morphTargetInfluences; // отёк - и в проходе глубины
     m.add(glubina);
     m.userData.glubina = glubina;
   }
@@ -208,7 +208,7 @@ export class Prosmotr {
     this.blizhe = blizhe;
     this.naskvoz = naskvoz;
     for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
-    // кожу и срез не подсвечиваем: зона — слизистая, а кожа должна быть одного цвета
+    // кожу и срез не подсвечиваем: зона - слизистая, а кожа должна быть одного цвета
     this.zona = obekty.flatMap((imya) => this.setki(imya)).filter((m) => !/^(kozha|srez)/.test(m.material.name));
     this.porazheniya = [];
     for (const [imya, o] of this.chasti) {
@@ -232,7 +232,7 @@ export class Prosmotr {
     this.misheni.clear();
     const radius = (s) => Math.min(s.radius * 1.7, s.radius + 0.004); // у крупных (лунка) кольцо не на пол-экрана
     const sfery = this.porazheniya.map((o) => new THREE.Box3().setFromObject(o).getBoundingSphere(new THREE.Sphere()));
-    // кольца, которые налезали бы друг на друга (пятна на соседних зубах), — одно общее
+    // кольца, которые налезали бы друг на друга (пятна на соседних зубах), - одно общее
     const obshchie = new Set();
     for (let i = 0; i < sfery.length; i++) {
       for (let j = i + 1; j < sfery.length; j++) {
@@ -246,7 +246,7 @@ export class Prosmotr {
       }
     }
     for (const s of sfery) {
-      const r = obshchie.has(s) ? s.radius * 1.08 : radius(s); // общее — вплотную вокруг группы
+      const r = obshchie.has(s) ? s.radius * 1.08 : radius(s); // общее - вплотную вокруг группы
       const m = new THREE.Mesh(
         new THREE.RingGeometry(1, 1 + Math.min(0.22, 0.0011 / r), 64), // толщина ~1 мм и у большого кольца
         new THREE.MeshBasicMaterial({ color: 0x0fa596, transparent: true, depthTest: false, side: THREE.DoubleSide }),
@@ -302,7 +302,7 @@ export class Prosmotr {
     });
   }
 
-  /** Жёлтое свечение подсвеченных частей: vkl = false — выключить (цвет ткани виден как есть). */
+  /** Жёлтое свечение подсвеченных частей: vkl = false - выключить (цвет ткани виден как есть). */
   podsvetka(vkl) {
     this.podsvetkaVkl = vkl;
     if (!vkl) for (const m of this.zona) m.material.emissive.setRGB(0, 0, 0);
@@ -323,7 +323,7 @@ export class Prosmotr {
     this.polet = { ot: this.kamera.position.clone(), do: kuda, cel0: this.upr.target.clone(), cel };
   }
 
-  /** Камера к поражению (или к подсвеченным частям; при отёке — всё лицо). ob — только эти поражения. */
+  /** Камера к поражению (или к подсвеченным частям; при отёке - всё лицо). ob - только эти поражения. */
   kZone(ob = null) {
     const odno = ob?.length === 1;
     ob ??= this.porazheniya.length ? this.porazheniya : this.zona;
@@ -331,22 +331,22 @@ export class Prosmotr {
     const box = new THREE.Box3();
     ob.forEach((o) => box.expandByObject(o));
     const s = box.getBoundingSphere(new THREE.Sphere());
-    // отёк виден по силуэту щеки: всё лицо спереди, чуть со здоровой стороны — отёчная щека видна контуром
+    // отёк виден по силуэту щеки: всё лицо спереди, чуть со здоровой стороны - отёчная щека видна контуром
     if (this.formy.length) return this.obzor(true, -0.2 * Math.sign(s.center.x - this.centr.x));
     const nap = s.center.clone().sub(this.centr).normalize().add(VPERED);
-    // поражение, обращённое к зрителю или вверх (жевательная поверхность, лунка), — смотреть ему «в лицо»
+    // поражение, обращённое к зрителю или вверх (жевательная поверхность, лунка), - смотреть ему «в лицо»
     const n = sredNormal(this.porazheniya.includes(ob[0]) ? ob : this.porazheniya);
     if (n.dot(VPERED) > 0.2) nap.addScaledVector(n, 1.5);
     if (this.napr && !odno) nap.set(...this.napr);
     nap.normalize();
-    // одно мелкое поражение (афта) — крупным планом, иначе на телефоне это точка
+    // одно мелкое поражение (афта) - крупным планом, иначе на телефоне это точка
     const d = THREE.MathUtils.clamp(this.dalnost(Math.max(s.radius, 0.012) * 2.3) * this.blizhe, odno ? 0.07 : 0.11, 0.3);
     this.letet(s.center.clone().addScaledVector(nap, d), s.center.clone());
   }
 
   /** К следующему поражению по кругу, каждое крупным планом. Возвращает { nomer, vsego } или null. */
   kSleduyushchemu() {
-    // сосочки десны (8) и валики (11) — десятки кусков одного поражения, их показывает общий вид
+    // сосочки десны (8) и валики (11) - десятки кусков одного поражения, их показывает общий вид
     if (this.porazheniya.length < 2 || this.porazheniya.length > 6 || this.formy.length) {
       this.kZone();
       return null;
@@ -356,10 +356,10 @@ export class Prosmotr {
     return { nomer: this.nomer + 1, vsego: this.porazheniya.length };
   }
 
-  /** Вся модель спереди; povorot — доворот вбок (x направления взгляда: + к левой стороне пациента). */
+  /** Вся модель спереди; povorot - доворот вбок (x направления взгляда: + к левой стороне пациента). */
   obzor(plavno = true, povorot = 0) {
     // вписать по ширине и высоте рамки модели: сфера вокруг глубокой модели (от губ до глотки) даёт слишком мелкий вид
-    // глотку — только до среза, иначе её невидимый хвост раздувает кадр вниз
+    // глотку - только до среза, иначе её невидимый хвост раздувает кадр вниз
     const box = new THREE.Box3();
     for (const [imya, o] of this.chasti) if (imya !== 'glotka') box.expandByObject(o);
     const glotka = this.chasti.get('glotka');

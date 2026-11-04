@@ -62,7 +62,7 @@ dd{margin:0}
       <button class="knopka" id="obzor">Весь рот</button>
       <button class="knopka" id="podsvetka" aria-pressed="true" title="Жёлтое свечение поражённой части">Подсветка</button>
     </div>
-    <p class="podpis" id="podpis">Нажми на любую часть — покажу, что это.</p>
+    <p class="podpis" id="podpis">Нажми на любую часть - покажу, что это.</p>
   </section>
 
   <section class="card">
@@ -91,7 +91,7 @@ try {
   p.pokazat(SLUCHAI[2]);
 
   p.onVybor = (imya) => {
-    podpis.innerHTML = imya ? `${nazvanie(imya)} <code>${imya}</code>` : 'Нажми на любую часть — покажу, что это.';
+    podpis.innerHTML = imya ? `${nazvanie(imya)} <code>${imya}</code>` : 'Нажми на любую часть - покажу, что это.';
   };
   for (const b of document.querySelectorAll('[data-rezhim]')) {
     b.addEventListener('click', () => {
@@ -111,7 +111,7 @@ try {
 } catch (e) {
   console.error(e);
   el.dataset.tekst = location.protocol === 'file:'
-    ? 'Модель не открывается с диска. Запусти в папке site: python -m http.server — и открой http://localhost:8000/3d.html'
+    ? 'Модель не открывается с диска. Запусти в папке site: python -m http.server - и открой http://localhost:8000/3d.html'
     : 'Не удалось загрузить модель.';
 }
 </script>
