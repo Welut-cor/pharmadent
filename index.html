@@ -145,7 +145,7 @@ section{margin-top:40px}
           <a class="btn ghost" href="#sluchai">Все случаи</a>
         </div>
         <ul class="fakty">
-          <li><b id="chislo">7</b> клинических случаев</li>
+          <li><b id="chislo">28</b> клинических случаев</li>
           <li>стоматология в 3D и терапия</li>
           <li>разбор каждого варианта</li>
         </ul>
@@ -205,7 +205,7 @@ section{margin-top:40px}
 const VSE = window.SLUCHAI_DANNYE.sluchai;
 const STOMAT = VSE.filter((s) => s.razdel === 'stomat');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const bolezni = (s) => s.hronicheskie.replace(/\.\s*$/, '').split(/,\s*/).filter((b) => b && !/^(отсутствуют|не отмечает)$/.test(b));
+const bolezni = (s) => s.hronicheskie.replace(/\.\s*$/, '').split(/,\s*/).filter((b) => b && !/^(отсутствуют|не отмечает|не выявлены)$/.test(b));
 const sklon = (n) => (n % 10 === 1 && n % 100 !== 11 ? 'клинический случай'
   : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'клинических случая' : 'клинических случаев');
 

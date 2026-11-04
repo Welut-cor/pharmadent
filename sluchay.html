@@ -765,7 +765,7 @@ $('#ii-proverit').onclick = () => {
     <p class="q">Найдено ошибок: ${naideno} из ${vsego}${lishnie ? ` · лишних отметок: ${lishnie}` : ''}</p>
     ${II.map((l, i) => (l.err ? `<div class="fb ${otmecheny.has(i) ? 'good' : 'badc'}"><strong>Строка ${i + 1} - ${otmecheny.has(i) ? 'найдено' : 'пропущено'}</strong><p class="cap">${esc(pochemu(l.err))}</p></div>`
       : otmecheny.has(i) ? `<div class="fb"><strong>Строка ${i + 1} - ошибки нет</strong></div>` : '')).join('')}
-    <section class="podhod"><h2 class="h">Как правильно</h2>${abzacy(SL.podhod.split(/\n\s*\n/)[0])}</section>
+    <section class="podhod"><h2 class="h">Как правильно</h2><p class="cap"><b>Верный ответ:</b> ${esc(SL.varianty.find((v) => v.bukva === SL.pravilnyy).tekst)}.</p>${abzacy(SL.podhod.split(/\n\s*\n/)[0])}</section>
     <p class="src">Вывод для студента: ${esc(VYVOD_II[SL.kl] || 'ИИ отвечает уверенно и тогда, когда ошибается. Проверяй каждое назначение сам.')}</p>`;
 };
 $('#ii-zanovo').onclick = nachatII;
