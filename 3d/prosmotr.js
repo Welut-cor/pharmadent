@@ -10,6 +10,8 @@ const OBOLOCHKA = /^(guba_|shcheka_)/;
 const SKVOZ = 0.22; // непрозрачность оболочки в режиме «прозрачно»
 const PODSVETKA = new THREE.Color(0xffb347);
 const VPERED = new THREE.Vector3(0, 0.25, 1);
+const ZAPAS = 1.1; // «Весь рот»: поле вокруг модели - 10 % от края кадра
+const DALNOST_MAKS = 0.45; // дальше камеру не пускаем, кроме «Всего рта» на узком экране
 // Зубы мудрости и их десна достроены (у основы их нет): видны, только если зуб назвал случай.
 const MUDROST = /^(zub|desna)_(\d8)$/;
 // Глотка у основы свисает ниже подбородка: всё, что ниже этой высоты, не рисуем.
@@ -121,7 +123,7 @@ export class Prosmotr {
     this.upr = new OrbitControls(this.kamera, r.domElement);
     this.upr.enableDamping = true;
     this.upr.minDistance = 0.05;
-    this.upr.maxDistance = 0.45;
+    this.upr.maxDistance = DALNOST_MAKS;
     // модель - вырезанный кусок головы: сверху, снизу и сзади видна изнанка, туда камеру не пускаем
     const grad = THREE.MathUtils.degToRad;
     Object.assign(this.upr, { minPolarAngle: grad(45), maxPolarAngle: grad(125), minAzimuthAngle: grad(-100), maxAzimuthAngle: grad(100) });
@@ -358,22 +360,51 @@ export class Prosmotr {
 
   /** Вся модель спереди; povorot - доворот вбок (x направления взгляда: + к левой стороне пациента). */
   obzor(plavno = true, povorot = 0) {
-    // вписать по ширине и высоте рамки модели: сфера вокруг глубокой модели (от губ до глотки) даёт слишком мелкий вид
-    // глотку - только до среза, иначе её невидимый хвост раздувает кадр вниз
-    const box = new THREE.Box3();
-    for (const [imya, o] of this.chasti) if (imya !== 'glotka') box.expandByObject(o);
-    const glotka = this.chasti.get('glotka');
-    if (glotka) {
-      const g = new THREE.Box3().setFromObject(glotka);
-      g.min.y = Math.max(g.min.y, GLOTKA_NIZ);
-      box.union(g);
-    }
-    const raz = box.getSize(new THREE.Vector3());
-    const v = THREE.MathUtils.degToRad(this.kamera.fov) / 2;
-    const g = Math.atan(Math.tan(v) * this.kamera.aspect);
-    const d = Math.max(raz.y / 2 / Math.tan(v), raz.x / 2 / Math.tan(g)) * 1.12 + raz.z / 2;
-    const c = box.getCenter(new THREE.Vector3());
+    // вписать вершины видимых частей с учётом перспективы: рамка всей модели берёт и спрятанные накладки, зубы мудрости,
+    // протез, хвост глотки под срезом - кадр съезжал вбок, а сфера вокруг глубокой модели даёт слишком мелкий вид
     const nap = new THREE.Vector3(povorot, 0.1, 1).normalize();
+    const vbok = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), nap).normalize();
+    const vverh = new THREE.Vector3().crossVectors(nap, vbok);
+    const tochki = [];
+    const p = new THREE.Vector3();
+    this.model.updateMatrixWorld(true);
+    this.model.traverse((m) => {
+      if (!m.isMesh || m.userData.sluzhebnyy) return;
+      for (let o = m; o; o = o.parent) if (!o.visible) return;
+      const pos = m.geometry.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        p.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+        if (m.userData.chast === 'glotka' && p.y < GLOTKA_NIZ) continue;
+        tochki.push(p.dot(vbok), p.dot(vverh), p.dot(nap));
+      }
+    });
+    const tv = Math.tan(THREE.MathUtils.degToRad(this.kamera.fov) / 2) / ZAPAS;
+    const tg = tv * this.kamera.aspect;
+    let [z0, z1] = [Infinity, -Infinity];
+    for (let i = 2; i < tochki.length; i += 3) [z0, z1] = [Math.min(z0, tochki[i]), Math.max(z1, tochki[i])];
+    const zc = (z0 + z1) / 2;
+    // центр кадра по краям на экране: ближние к камере точки (губы, кожа) весят больше дальних
+    let cx = 0;
+    let cy = 0;
+    let d = 0;
+    for (let shag = 0; ; shag++) {
+      d = 0;
+      for (let i = 0; i < tochki.length; i += 3) {
+        d = Math.max(d, Math.abs(tochki[i] - cx) / tg + tochki[i + 2] - zc, Math.abs(tochki[i + 1] - cy) / tv + tochki[i + 2] - zc);
+      }
+      if (shag === 3) break;
+      let [x0, x1, y0, y1] = [Infinity, -Infinity, Infinity, -Infinity];
+      for (let i = 0; i < tochki.length; i += 3) {
+        const gl = d + zc - tochki[i + 2];
+        const x = (tochki[i] - cx) / gl;
+        const y = (tochki[i + 1] - cy) / gl;
+        [x0, x1, y0, y1] = [Math.min(x0, x), Math.max(x1, x), Math.min(y0, y), Math.max(y1, y)];
+      }
+      cx += ((x0 + x1) / 2) * d;
+      cy += ((y0 + y1) / 2) * d;
+    }
+    const c = new THREE.Vector3().addScaledVector(vbok, cx).addScaledVector(vverh, cy).addScaledVector(nap, zc);
+    this.upr.maxDistance = Math.max(DALNOST_MAKS, d * 1.02); // узкий экран: иначе OrbitControls не даст отойти
     this.letet(c.clone().addScaledVector(nap, d), c, plavno);
   }
 
