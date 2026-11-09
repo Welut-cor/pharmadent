@@ -72,6 +72,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .model canvas{display:block;width:100%;height:100%}
 .model[data-tekst]::after{content:attr(data-tekst);position:absolute;inset:0;display:grid;place-items:center;
   padding:16px;text-align:center;color:var(--muted)}
+.model[data-zagr]::before{content:"";position:absolute;left:50%;top:calc(50% + 22px);width:min(60%,240px);height:4px;
+  transform:translateX(-50%);border-radius:2px;
+  background:linear-gradient(var(--accent),var(--accent)) 0 0/var(--zagr,0%) 100% no-repeat,var(--line)}
 .panel{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .panel button{font:inherit;color:inherit;background:transparent;border:0;padding:8px 12px;min-height:44px;cursor:pointer}
@@ -837,8 +840,22 @@ async function zapustit() {
   zapushcheno = true;
   try {
     const { Prosmotr, SLUCHAI, nazvanie } = await import('./3d/prosmotr.js');
-    const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb');
+    // nginx сжимает GLB на лету и размер не сообщает - тогда проценты считаем от размера файла
+    const RAZMER_GLB = 2182820; // байт; пересобрал модель - поменяй (иначе полоса встанет на 99 % или прыгнет)
+    el.dataset.zagr = '';
+    const p = await Prosmotr.sozdat(el, 'models/polost_rta.glb', (z, vsego) => {
+      const pr = Math.min(99, Math.floor((100 * z) / (vsego || RAZMER_GLB)));
+      el.style.setProperty('--zagr', `${pr}%`);
+      el.dataset.tekst = `Загружаю 3D-модель… ${pr} %`;
+    });
     delete el.dataset.tekst;
+    delete el.dataset.zagr;
+    // модель в кэш для работы без сети кладёт не sw.js при установке (это второе скачивание 2 МБ на телефоне),
+    // а страница: при первом заходе sw.js её запрос не видел, файл берём из HTTP-кэша браузера
+    if ('caches' in window) {
+      const url = new URL('models/polost_rta.glb', location.href).href;
+      caches.open('dentalis').then(async (k) => (await k.match(url)) || k.add(new Request(url, { cache: 'force-cache' }))).catch(() => {});
+    }
     p.rezhim('prozrachno');
     const podsv = document.getElementById('podsvetka');
     const pokazat = (kl) => {
@@ -874,6 +891,7 @@ async function zapustit() {
     window.prosmotr = p; // для проверки из консоли
   } catch (e) {
     console.error(e);
+    delete el.dataset.zagr;
     el.dataset.tekst = 'Не удалось загрузить 3D-модель.';
   }
 }

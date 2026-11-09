@@ -3,6 +3,7 @@
 // Имена частей - по разделу «3D: договорённость об именах» в CLAUDE.md.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Наружные мягкие ткани: в прозрачном режиме сквозь них видно, что внутри.
@@ -99,9 +100,10 @@ function vidimyy(o) {
 }
 
 export class Prosmotr {
-  static async sozdat(konteyner, put) {
+  /** naProgress(zagruzheno, vsego) - байты модели; vsego = 0, если сервер размер не сообщил (сжатие gzip). */
+  static async sozdat(konteyner, put, naProgress) {
     const p = new Prosmotr(konteyner);
-    await p.zagruzit(put);
+    await p.zagruzit(put, naProgress);
     return p;
   }
 
@@ -145,8 +147,10 @@ export class Prosmotr {
     new IntersectionObserver(([e]) => r.setAnimationLoop(e.isIntersecting ? (t) => this.kadr(t) : null)).observe(konteyner);
   }
 
-  async zagruzit(put) {
-    const gltf = await new GLTFLoader().loadAsync(put);
+  async zagruzit(put, naProgress) {
+    // модель сжата meshopt (gltf-transform meshopt): вчетверо меньше для мобильного интернета
+    const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+      .loadAsync(put, (e) => naProgress?.(e.loaded, e.lengthComputable ? e.total : 0));
     this.model = gltf.scene;
     this.chasti = new Map(); // имя части → узел; у части из двух материалов меши внутри узла
     this.model.traverse((o) => {
