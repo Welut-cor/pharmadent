@@ -1,0 +1,53 @@
+name: Ошибка в случае
+description: Неверный факт в карте пациента, вопросе, разборе, светофоре или «Найди ошибку ИИ»
+title: "Случай N: "
+labels: ["медицина"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Спасибо! На сайте учатся, поэтому каждую правку сверяем с источником.
+        Не указывайте данные реальных пациентов.
+  - type: input
+    id: sluchay
+    attributes:
+      label: Номер случая
+      description: Он в адресе страницы после `#` и в списке случаев.
+      placeholder: "2"
+    validations:
+      required: true
+  - type: dropdown
+    id: gde
+    attributes:
+      label: Где ошибка
+      options:
+        - Карта пациента
+        - Вопрос или варианты ответа
+        - Верный ответ
+        - Разбор вариантов
+        - Светофор (метка у варианта)
+        - Найди ошибку ИИ
+        - 3D-модель (место или вид поражения)
+        - Другое
+    validations:
+      required: true
+  - type: textarea
+    id: seychas
+    attributes:
+      label: Что написано сейчас
+      description: Скопируйте фразу с сайта.
+    validations:
+      required: true
+  - type: textarea
+    id: nado
+    attributes:
+      label: Как должно быть
+    validations:
+      required: true
+  - type: textarea
+    id: istochnik
+    attributes:
+      label: Источник
+      description: Инструкция препарата (ГРЛС, Видаль, РЛС), клинические рекомендации Минздрава РФ или учебник - ссылка или название и страница.
+    validations:
+      required: true

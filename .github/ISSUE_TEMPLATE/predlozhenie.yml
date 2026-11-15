@@ -1,0 +1,22 @@
+name: Предложение
+description: Идея для тренажёра - новый случай, функция, улучшение
+labels: ["предложение"]
+body:
+  - type: textarea
+    id: ideya
+    attributes:
+      label: Что предлагаете
+    validations:
+      required: true
+  - type: textarea
+    id: zachem
+    attributes:
+      label: Зачем это студенту
+      description: Какую задачу решает, как помогает учиться.
+    validations:
+      required: true
+  - type: textarea
+    id: istochnik
+    attributes:
+      label: Источник
+      description: Для нового клинического случая - откуда он (методичка, учебник, рекомендации). Данные реальных пациентов не присылайте.

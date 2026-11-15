@@ -1,0 +1,47 @@
+name: Ошибка сайта
+description: Что-то не работает, не грузится или выглядит неправильно
+labels: ["ошибка"]
+body:
+  - type: textarea
+    id: chto
+    attributes:
+      label: Что случилось
+      description: Что сделали, что ожидали и что получилось.
+      placeholder: |
+        Открыл случай 5, нажал «К поражению» - камера улетела за модель.
+    validations:
+      required: true
+  - type: input
+    id: adres
+    attributes:
+      label: Адрес страницы
+      placeholder: https://welut-cor.github.io/pharmadent/sluchay.html#5
+  - type: dropdown
+    id: ustroystvo
+    attributes:
+      label: Устройство
+      options:
+        - Телефон Android
+        - iPhone
+        - Планшет
+        - Компьютер
+    validations:
+      required: true
+  - type: input
+    id: brauzer
+    attributes:
+      label: Браузер и версия
+      placeholder: Chrome 140, Safari 19, Яндекс Браузер…
+  - type: dropdown
+    id: tema
+    attributes:
+      label: Тема
+      options:
+        - Светлая
+        - Тёмная
+        - Не знаю
+  - type: textarea
+    id: snimok
+    attributes:
+      label: Снимок экрана
+      description: Перетащите картинку сюда. Если в консоли браузера есть ошибки - их текст тоже.
