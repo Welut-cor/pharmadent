@@ -9,11 +9,14 @@ const ZHDAT = 4000;
 self.window = self;
 importScripts('data/sluchai.js');
 const FAYLY = [
-  './', 'index.html', 'sluchay.html', 'istochniki.html', 'tema.js', 'telo.js', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js',
+  './', 'index.html', 'atlas.html', 'sluchay.html', 'istochniki.html', 'tema.js', 'oformlenie.js', 'telo.js', 'data/sluchai.js', 'data/svetofor.js', '3d/prosmotr.js',
   'vendor/three/three.module.js', 'vendor/three/three.core.js',
   'vendor/three/addons/loaders/GLTFLoader.js', 'vendor/three/addons/libs/meshopt_decoder.module.js', 'vendor/three/addons/controls/OrbitControls.js',
   'vendor/three/addons/utils/BufferGeometryUtils.js', 'vendor/three/addons/utils/SkeletonUtils.js',
-  'vendor/shrifty/shrifty.css', 'vendor/shrifty/golos-kirillica.woff2', 'vendor/shrifty/golos-latinica.woff2',
+  'vendor/shrifty/shrifty.css', 'vendor/shrifty/literata-kirillica.woff2', 'vendor/shrifty/literata-latinica.woff2',
+  'vendor/shrifty/literata-kursiv-kirillica.woff2', 'vendor/shrifty/literata-kursiv-latinica.woff2',
+  'vendor/shrifty/sourcesans-kirillica.woff2', 'vendor/shrifty/sourcesans-latinica.woff2',
+  'vendor/shrifty/golos-kirillica.woff2', 'vendor/shrifty/golos-latinica.woff2',
   'vendor/shrifty/unbounded-kirillica.woff2', 'vendor/shrifty/unbounded-latinica.woff2',
   ...self.SLUCHAI_DANNYE.sluchai.filter((s) => s.razdel === 'stomat').map((s) => `kartinki/sluchay-${s.kl}.webp`),
 ];

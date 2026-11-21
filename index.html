@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-glavnaya="klassika">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,6 +11,7 @@
 if (/^#t?\d+$/.test(location.hash)) location.replace('sluchay.html' + location.hash);
 </script>
 <script src="tema.js"></script>
+<script src="oformlenie.js"></script>
 <link rel="stylesheet" href="vendor/shrifty/shrifty.css">
 <style>
 /* Главная: что это за тренажёр, как проходит случай, список случаев. Цвета и шрифты - как в sluchay.html. */
@@ -50,6 +51,11 @@ section{margin-top:40px}
 .tema{margin-left:auto;display:grid;place-items:center;width:44px;height:44px;padding:0;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;cursor:pointer}
 .tema:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .verh .tema svg{width:20px;height:20px}
+/* кнопка оформления «Атлас» (oformlenie.js) */
+.oform{font:inherit;font-weight:600;font-size:14px;height:44px;padding:0 14px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.oform:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.verh .oform{margin-left:auto}
+.verh .oform+.tema{margin-left:0}
 
 /* первый экран */
 .hero{display:grid;gap:20px;margin-top:20px;align-items:center}
@@ -131,6 +137,7 @@ section{margin-top:40px}
   <header class="verh">
     <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 9c2-2 5-1 7 0 2-1 5-2 7 0 2 3 0 7-1 10l-1 5c0 2-2 2-2 0l-1-4c0-1-2-1-2 0l-1 4c0 2-2 2-2 0l-1-5c-1-3-3-7-1-10z" fill="var(--card)"/></svg>
     ФармаДент
+    <button class="oform" id="oform">Атлас</button>
     <button class="tema" id="tema" aria-label="Тема"></button>
   </header>
 
